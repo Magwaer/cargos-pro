@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f3;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+input::placeholder{color:#9a9992}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <header style="position:sticky;top:0;z-index:5;background:rgba(245,245,243,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #e7e6e1">
+    <div style="max-width:1440px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1;max-width:520px;height:36px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#fff;border:1px solid #e3e2dd;border-radius:8px">
+        <span style="width:12px;height:12px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+        <input placeholder="Search orders, companies, deals" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f;padding:2px 6px;border:1px solid #e3e2dd;border-radius:4px">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:6px">
+        <button style="height:36px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#f0efeb">EN <span style="color:#9a9992;font-size:10px">▾</span></button>
+        <button style="width:36px;height:36px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#f0efeb" title="Dark mode"><span style="width:12px;height:12px;border-radius:50%;background:#1c1c1a;box-shadow:inset -4px -2px 0 0 #fff"></span></button>
+        <div style="width:36px;height:36px;border-radius:50%;background:#e8f3ec;color:#3a3a36;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">AK</div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1440px;width:100%;margin:0 auto;padding:32px 28px 48px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em">Orders</h1>
+        <div style="font-size:14px;color:#77766f">Every shipment from booking to invoice.</div>
+      </div>
+      <button style="height:36px;padding:0 14px;border:0;background:#1c1c1a;color:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:#33332f">New order</button>
+    </div>
+
+    <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;display:flex;flex-direction:column">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #efeee9">
+          <sc-if value="{{ isTable }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-wrap:wrap;gap:2px;padding:3px;background:#f2f1ed;border-radius:8px">
+            <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="6">
+              <button onClick="{{ tab.select }}" style="height:28px;padding:0 12px;border:0;border-radius:6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;background:{{ tab.bg }};color:{{ tab.color }};box-shadow:{{ tab.shadow }}">{{ tab.label }} <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#9a9992">{{ tab.count }}</span></button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;color:#77766f">{{ totalText }}</div>
+          </sc-if>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="width:280px;max-width:100%;height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;background:#fff;border:1px solid #e3e2dd;border-radius:8px">
+          <span style="width:11px;height:11px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+          <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Filter by reference, customer or city" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        </div>
+        <div style="display:flex;gap:2px;padding:3px;background:#ebeae6;border-radius:8px">
+          <button onClick="{{ setTable }}" title="Table" style="width:32px;height:30px;border:0;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:{{ tableBtn.bg }};box-shadow:{{ tableBtn.shadow }}">
+            <span style="width:14px;height:12px;border:1.5px solid {{ tableBtn.ink }};border-radius:2px;display:flex;flex-direction:column;justify-content:space-evenly">
+              <span style="height:1.5px;background:{{ tableBtn.ink }}"></span><span style="height:1.5px;background:{{ tableBtn.ink }}"></span>
+            </span>
+          </button>
+          <button onClick="{{ setBoard }}" title="Board" style="width:32px;height:30px;border:0;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:{{ boardBtn.bg }};box-shadow:{{ boardBtn.shadow }}">
+            <span style="width:14px;height:12px;border:1.5px solid {{ boardBtn.ink }};border-radius:2px;display:flex;gap:2px;padding:1.5px">
+              <span style="flex:1;height:70%;background:{{ boardBtn.ink }};border-radius:1px"></span><span style="flex:1;height:40%;background:{{ boardBtn.ink }};border-radius:1px"></span><span style="flex:1;height:100%;background:{{ boardBtn.ink }};border-radius:1px"></span>
+            </span>
+          </button>
+        </div>
+      </div>
+        </div>
+      <sc-if value="{{ isTable }}" hint-placeholder-val="{{ true }}">
+        <div style="overflow-x:auto">
+          <div style="min-width:760px;padding:0 16px 6px">
+            <div style="display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1.6fr) 120px 90px;gap:16px;padding:10px 0;font-size:12px;color:#77766f;border-bottom:1px solid #efeee9">
+              <div>Reference</div><div>Customer</div><div>Lane</div><div>Status</div><div style="text-align:right">Price</div>
+            </div>
+            <sc-for list="{{ pageRows }}" as="o" hint-placeholder-count="5">
+              <a href="Order Detail.dc.html" style="display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1.6fr) 120px 90px;gap:16px;align-items:center;padding:12px 0;font-size:14px;border-bottom:1px solid #f3f2ee;color:#1c1c1a" style-hover="background:#fafaf8">
+                <div style="font-family:'Geist Mono',monospace;font-size:13px;font-weight:500">{{ o.ref }}</div>
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ o.customer }}</div>
+                <div style="display:flex;align-items:center;gap:8px;min-width:0"><span>{{ o.from }}</span><span style="color:#a9a8a1">→</span><span>{{ o.to }}</span></div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:13px"><span style="width:7px;height:7px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.status }}</div>
+                <div style="font-family:'Geist Mono',monospace;font-size:13px;text-align:right">{{ o.price }}</div>
+              </a>
+            </sc-for>
+            <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:40px 0;text-align:center;font-size:14px;color:#77766f">No orders match.</div>
+            </sc-if>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid #efeee9;font-size:13px;color:#77766f">
+          <span style="font-family:'Geist Mono',monospace;font-size:12px">{{ rangeText }}</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button onClick="{{ prev }}" style="height:30px;padding:0 10px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font:inherit;font-size:13px;cursor:pointer;color:{{ prevColor }}" style-hover="background:#f0efeb">← Prev</button>
+            <sc-for list="{{ pageBtns }}" as="p" hint-placeholder-count="2">
+              <button onClick="{{ p.go }}" style="width:30px;height:30px;border:1px solid {{ p.border }};border-radius:7px;font:inherit;font-family:'Geist Mono',monospace;font-size:12px;cursor:pointer;background:{{ p.bg }};color:{{ p.color }}">{{ p.n }}</button>
+            </sc-for>
+            <button onClick="{{ next }}" style="height:30px;padding:0 10px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font:inherit;font-size:13px;cursor:pointer;color:{{ nextColor }}" style-hover="background:#f0efeb">Next →</button>
+          </div>
+        </div>
+      </sc-if>
+
+    <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ false }}">
+      <div style="overflow-x:auto;padding:16px">
+        <div style="display:grid;grid-template-columns:repeat(5,minmax(260px,1fr));gap:12px;align-items:start">
+          <sc-for list="{{ columns }}" as="col" hint-placeholder-count="5">
+            <div onDragOver="{{ col.over }}" onDragLeave="{{ col.leave }}" onDrop="{{ col.drop }}" style="background:{{ col.bg }};border:1px solid {{ col.border }};border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:180px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px">
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:{{ col.dot }}"></span>{{ col.label }}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f">{{ col.sum }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:11px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center">{{ col.count }}</span>
+                </div>
+              </div>
+              <sc-for list="{{ col.cards }}" as="c" hint-placeholder-count="1">
+                <div draggable="true" onDragStart="{{ c.dragStart }}" onDragEnd="{{ c.dragEnd }}" style="background:#fff;border:1px solid #e7e6e1;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;cursor:grab;opacity:{{ c.opacity }}" style-hover="border-color:#d3d2cc">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                    <a href="Order Detail.dc.html" style="font-family:'Geist Mono',monospace;font-size:12px;font-weight:500">{{ c.ref }}</a>
+                    <span style="font-size:12px;color:#77766f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.customer }}</span>
+                  </div>
+                  <div style="font-size:15px;font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px">{{ c.from }} <span style="color:#a9a8a1;font-weight:400">→</span> {{ c.to }}</div>
+                  <sc-if value="{{ c.hasMeta }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12px;color:#77766f">{{ c.meta }}</div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid #f3f2ee">
+                    <span style="font-family:'Geist Mono',monospace;font-size:14px;font-weight:500">{{ c.price }}</span>
+                    <sc-if value="{{ c.hasAction }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ c.act }}" style="height:28px;padding:0 10px;border:1px solid #e3e2dd;background:#fff;border-radius:6px;font:inherit;font-size:12px;font-weight:500;color:#1c1c1a;cursor:pointer" style-hover="background:#f0efeb">{{ c.action }}</button>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ col.isEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px dashed #d9d8d2;border-radius:10px;padding:18px;text-align:center;font-size:12px;color:#9a9992">Drop orders here</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;table&quot;,&quot;board&quot;],&quot;default&quot;:&quot;table&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;pageSize&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[5,10,25],&quot;default&quot;:5,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: null, tab: 'All', query: '', page: 1, dragId: null, overCol: null,
+    orders: [
+      { ref: 'NL-24026', customer: 'Danube Retail SRL', from: 'Bucharest, RO', to: 'Milan, IT', status: 'Invoiced', price: 6880, meta: '1,600 km · 23h 32m' },
+      { ref: 'NL-24022', customer: 'Danube Retail SRL', from: 'Bucharest, RO', to: 'Milan, IT', status: 'Assigned', price: 2450, meta: '1,600 km · 23h 32m' },
+      { ref: 'NL-24025', customer: 'Baltic Grain Sp. z o.o.', from: 'Krakow, PL', to: 'Prague, CZ', status: 'Invoiced', price: 960, meta: '' },
+      { ref: 'NL-24024', customer: 'Moldovan Fresh', from: 'Chisinau, MD', to: 'Warsaw, PL', status: 'Invoiced', price: 1680, meta: 'Apples, +4°C · 971 km · 14h 17m' },
+      { ref: 'NL-24021', customer: 'Baltic Grain Sp. z o.o.', from: 'Warsaw, PL', to: 'Berlin, DE', status: 'Invoiced', price: 1860, meta: 'Milling wheat, 24t · 621 km · 9h 8m' },
+      { ref: 'NL-24023', customer: 'Rhine Chemicals GmbH', from: 'Gdansk, PL', to: 'Rotterdam, NL', status: 'Invoiced', price: 2100, meta: '' }
+    ]
+  };
+  seg(on) { return { bg: on ? '#fff' : 'transparent', color: on ? '#1c1c1a' : '#77766f', shadow: on ? '0 1px 2px rgba(0,0,0,0.08)' : 'none', ink: on ? '#1c1c1a' : '#8a8983' }; }
+  renderVals() {
+    const s = this.state;
+    const view = s.view ?? this.props.defaultView ?? 'table';
+    const statuses = ['Booked', 'Assigned', 'In transit', 'Delivered', 'Invoiced'];
+    const dots = { Booked: '#a9a8a1', Assigned: 'oklch(0.6 0.14 255)', 'In transit': 'oklch(0.72 0.14 70)', Delivered: 'oklch(0.6 0.12 155)', Invoiced: 'oklch(0.6 0.14 295)' };
+    const actions = { Booked: 'Assign', Assigned: 'Start transit', 'In transit': 'Mark delivered', Delivered: 'Create invoice' };
+    const eur = n => '€' + n.toLocaleString('en-US');
+    const q = s.query.trim().toLowerCase();
+    const matched = s.orders.filter(o => !q || [o.ref, o.customer, o.from, o.to].some(v => v.toLowerCase().includes(q)));
+    const setStatus = (ref, status) => this.setState(st => ({ orders: st.orders.map(o => o.ref === ref ? { ...o, status } : o) }));
+
+    const tabs = ['All', ...statuses].map(label => ({
+      label, count: label === 'All' ? matched.length : matched.filter(o => o.status === label).length,
+      ...this.seg(s.tab === label), select: () => this.setState({ tab: label, page: 1 })
+    }));
+    const rows = matched.filter(o => s.tab === 'All' || o.status === s.tab);
+    const size = this.props.pageSize ?? 5;
+    const pages = Math.max(1, Math.ceil(rows.length / size));
+    const page = Math.min(s.page, pages);
+    const start = (page - 1) * size;
+    const pageRows = rows.slice(start, start + size).map(o => ({ ...o, price: eur(o.price), dot: dots[o.status] }));
+    const go = p => () => this.setState({ page: Math.max(1, Math.min(pages, p)) });
+    const pageBtns = Array.from({ length: pages }, (_, i) => {
+      const on = i + 1 === page;
+      return { n: i + 1, go: go(i + 1), bg: on ? '#1c1c1a' : 'transparent', color: on ? '#fff' : '#1c1c1a', border: on ? '#1c1c1a' : '#e3e2dd' };
+    });
+
+    const columns = statuses.map(label => {
+      const list = matched.filter(o => o.status === label);
+      const over = s.overCol === label && s.dragId;
+      return {
+        label, dot: dots[label], count: list.length, isEmpty: list.length === 0,
+        sum: list.length ? eur(list.reduce((a, o) => a + o.price, 0)) : '',
+        bg: over ? '#e9eef6' : '#f5f5f3', border: over ? 'oklch(0.75 0.08 255)' : 'transparent',
+        over: e => { e.preventDefault(); if (this.state.overCol !== label) this.setState({ overCol: label }); },
+        leave: () => {},
+        drop: e => { e.preventDefault(); const id = this.state.dragId; if (id) setStatus(id, label); this.setState({ dragId: null, overCol: null }); },
+        cards: list.map(o => {
+          const idx = statuses.indexOf(o.status);
+          return {
+            ...o, price: eur(o.price), hasMeta: !!o.meta, hasAction: !!actions[o.status], action: actions[o.status] ?? '',
+            opacity: s.dragId === o.ref ? 0.4 : 1,
+            act: e => { e.stopPropagation(); setStatus(o.ref, statuses[idx + 1]); },
+            dragStart: e => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', o.ref); this.setState({ dragId: o.ref }); },
+            dragEnd: () => this.setState({ dragId: null, overCol: null })
+          };
+        })
+      };
+    });
+
+    const total = matched.reduce((a, o) => a + o.price, 0);
+    return {
+      query: s.query, onQuery: e => this.setState({ query: e.target.value, page: 1 }),
+      isTable: view === 'table', isBoard: view === 'board',
+      tableBtn: this.seg(view === 'table'), boardBtn: this.seg(view === 'board'),
+      setTable: () => this.setState({ view: 'table' }), setBoard: () => this.setState({ view: 'board' }),
+      totalText: `${matched.length} orders · ${eur(total)}`,
+      tabs, pageRows, empty: rows.length === 0, pageBtns,
+      rangeText: rows.length ? `${start + 1}–${start + pageRows.length} of ${rows.length}` : '0 of 0',
+      prev: go(page - 1), next: go(page + 1),
+      prevColor: page > 1 ? '#1c1c1a' : '#c9c8c2', nextColor: page < pages ? '#1c1c1a' : '#c9c8c2',
+      columns
+    };
+  }
+}
+</script>
+</body>
+</html>

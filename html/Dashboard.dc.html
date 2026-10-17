@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f3;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+</style>
+</helmet>
+<div style="max-width:1440px;margin:0 auto;padding:32px 28px 48px;display:flex;flex-direction:column;gap:20px">
+
+  <header style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:13px;color:#77766f">Tuesday, 13 October · Northlane Logistics</div>
+      <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em">Good evening, Anna</h1>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button style="height:36px;padding:0 14px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer" style-hover="background:#f0efeb">New deal</button>
+      <button style="height:36px;padding:0 14px;border:0;background:#1c1c1a;color:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:#33332f">New order</button>
+    </div>
+  </header>
+
+  <section style="background:#efeee9;border:1px solid #e7e6e1;border-radius:12px;overflow:hidden;display:flex;flex-wrap:wrap;gap:1px">
+    <div style="flex:1 1 170px;background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:13px;color:#77766f">Margin this month</div>
+      <div style="font-size:28px;font-weight:600;letter-spacing:-0.02em">€12,136</div>
+      <div style="font-size:12px;color:#77766f">on €15,930 revenue · 76%</div>
+    </div>
+    <div style="flex:1 1 170px;background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:13px;color:#77766f">Open orders</div>
+      <div style="font-size:28px;font-weight:600;letter-spacing:-0.02em">1</div>
+      <div style="font-size:12px;color:#77766f">Booked, assigned or in transit</div>
+    </div>
+    <div style="flex:1 1 170px;background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:13px;color:#77766f">Open pipeline</div>
+      <div style="font-size:28px;font-weight:600;letter-spacing:-0.02em">€5,080</div>
+      <div style="font-size:12px;color:#77766f">2 open deals</div>
+    </div>
+    <div style="flex:1 1 170px;background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:13px;color:#77766f">On-time delivery</div>
+      <div style="font-size:28px;font-weight:600;letter-spacing:-0.02em">100%</div>
+      <div style="font-size:12px;color:#77766f">Delivered inside the window</div>
+    </div>
+    <div style="flex:1 1 170px;background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:oklch(0.5 0.17 25)"><span style="width:6px;height:6px;border-radius:50%;background:oklch(0.58 0.19 25)"></span>Overdue</div>
+      <div style="font-size:28px;font-weight:600;letter-spacing:-0.02em;color:oklch(0.48 0.17 25)">€960</div>
+      <div style="font-size:12px;color:#77766f">1 invoice · INV-1002</div>
+    </div>
+  </section>
+
+  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:stretch">
+
+    <div style="flex:1.4 1 520px;display:flex;flex-direction:column;gap:20px;min-width:0">
+      <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+          <h2 style="margin:0;font-size:15px;font-weight:600">Pipeline</h2>
+          <a href="#" style="font-size:13px;color:#77766f">View deals →</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ openStages }}" as="s" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:100px minmax(0,1fr) 80px;align-items:center;gap:14px">
+              <div style="font-size:13px;color:#1c1c1a">{{ s.name }}</div>
+              <div style="height:10px;background:#f0efeb;border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:{{ s.pct }};background:{{ accent }};border-radius:3px"></div>
+              </div>
+              <div style="font-family:'Geist Mono',monospace;font-size:13px;text-align:right;color:{{ s.valColor }}">{{ s.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="border-top:1px solid #efeee9;padding-top:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:12px;color:#77766f">Won</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:16px;font-weight:500;color:oklch(0.48 0.12 155)">€8,250</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:12px;color:#77766f">Lost</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:16px;font-weight:500;color:#77766f">€1,500</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:12px;color:#77766f">Win rate by value</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:16px;font-weight:500">85%</div>
+          </div>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px;flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+          <h2 style="margin:0;font-size:15px;font-weight:600">Fleet</h2>
+          <div style="font-size:13px;color:#77766f">3 vehicles</div>
+        </div>
+        <div style="display:flex;gap:3px;height:10px">
+          <div style="flex:2;background:oklch(0.62 0.12 155);border-radius:3px"></div>
+          <div style="flex:1;background:oklch(0.75 0.13 75);border-radius:3px"></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;font-size:13px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:2px;background:#d9d8d2"></span>On a trip <b style="font-weight:600">0</b></div>
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:2px;background:oklch(0.62 0.12 155)"></span>Available <b style="font-weight:600">2</b></div>
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:2px;background:oklch(0.75 0.13 75)"></span>In maintenance <b style="font-weight:600">1</b></div>
+        </div>
+      </section>
+    </div>
+
+    <section style="flex:1 1 380px;min-width:0;background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px 8px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:10px">
+        <h2 style="margin:0;font-size:15px;font-weight:600">Open tasks</h2>
+        <div style="font-size:13px;color:#77766f">{{ remaining }} remaining</div>
+      </div>
+      <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="6">
+        <div onClick="{{ t.toggle }}" style="display:flex;gap:12px;align-items:flex-start;padding:{{ rowPad }} 0;border-top:1px solid #efeee9;cursor:pointer">
+          <div style="margin-top:2px;width:16px;height:16px;flex:none;border-radius:5px;border:1.5px solid {{ t.boxBorder }};background:{{ t.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;line-height:1">{{ t.check }}</div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:14px;font-weight:500;text-wrap:pretty;color:{{ t.titleColor }};text-decoration:{{ t.deco }}">{{ t.title }}</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#77766f">
+              <span style="padding:1px 6px;border-radius:4px;background:#f2f1ed;color:#5d5c56">{{ t.type }}</span>
+              <span>{{ t.who }}</span>
+            </div>
+          </div>
+          <div style="width:24px;height:24px;flex:none;border-radius:50%;background:{{ t.avBg }};color:#3a3a36;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ t.initials }}</div>
+        </div>
+      </sc-for>
+    </section>
+  </div>
+
+  <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px 8px;display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:6px">
+      <h2 style="margin:0;font-size:15px;font-weight:600">Recent orders</h2>
+      <a href="#" style="font-size:13px;color:#77766f">All orders →</a>
+    </div>
+    <div style="overflow-x:auto">
+      <div style="min-width:720px">
+        <div style="display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1.6fr) 120px 90px;gap:16px;padding:8px 0;font-size:12px;color:#77766f;border-bottom:1px solid #efeee9">
+          <div>Reference</div><div>Customer</div><div>Lane</div><div>Status</div><div style="text-align:right">Price</div>
+        </div>
+        <sc-for list="{{ orders }}" as="o" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1.6fr) 120px 90px;gap:16px;align-items:center;padding:{{ rowPad }} 0;font-size:14px;border-bottom:1px solid #f3f2ee" style-hover="background:#fafaf8">
+            <div style="font-family:'Geist Mono',monospace;font-size:13px;font-weight:500">{{ o.ref }}</div>
+            <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ o.customer }}</div>
+            <div style="display:flex;align-items:center;gap:8px;min-width:0">
+              <span>{{ o.from }}</span><span style="color:#a9a8a1">→</span><span>{{ o.to }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+              <span style="width:7px;height:7px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.status }}
+            </div>
+            <div style="font-family:'Geist Mono',monospace;font-size:13px;text-align:right">{{ o.price }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;options&quot;:[&quot;oklch(0.55 0.14 255)&quot;,&quot;#1c1c1a&quot;,&quot;oklch(0.55 0.12 155)&quot;,&quot;oklch(0.58 0.14 45)&quot;],&quot;default&quot;:&quot;oklch(0.55 0.14 255)&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { done: {} };
+  renderVals() {
+    const accent = this.props.accent ?? 'oklch(0.55 0.14 255)';
+    const rowPad = (this.props.density ?? 'comfortable') === 'compact' ? '9px' : '13px';
+    const stages = [['New', 980], ['Quoted', 0], ['Negotiation', 4100]];
+    const max = 4100;
+    const openStages = stages.map(([name, v]) => ({
+      name, value: '€' + v.toLocaleString('en-US'),
+      pct: (v / max * 100) + '%', valColor: v ? '#1c1c1a' : '#a9a8a1'
+    }));
+    const avatars = { 'Marek Nowak': '#e6eef9', 'Elena Ionescu': '#f6ebe2', 'Anna Kowalska': '#e8f3ec' };
+    const raw = [
+      ['Confirm Rotterdam time slot', 'Marek Nowak', 'Order'],
+      ['Chase overdue invoice INV-1002', 'Elena Ionescu', 'Invoice'],
+      ['Assign a relation for Bucharest → Milan retail FTL', 'Marek Nowak', 'Deal'],
+      ['Review delivery NL-24024 and send the invoice', 'Elena Ionescu', 'Order'],
+      ['Review delivery NL-24021 and send the invoice', 'Elena Ionescu', 'Order'],
+      ['Send updated rate card', 'Anna Kowalska', 'Company']
+    ];
+    const done = this.state.done;
+    const tasks = raw.map(([title, who, type], i) => {
+      const d = !!done[i];
+      return {
+        title, who, type,
+        initials: who.split(' ').map(p => p[0]).join(''),
+        avBg: avatars[who],
+        check: d ? '✓' : '',
+        boxBorder: d ? '#1c1c1a' : '#cfcec8', boxBg: d ? '#1c1c1a' : '#fff',
+        titleColor: d ? '#a9a8a1' : '#1c1c1a', deco: d ? 'line-through' : 'none',
+        toggle: () => this.setState(s => ({ done: { ...s.done, [i]: !s.done[i] } }))
+      };
+    });
+    const dots = { Invoiced: 'oklch(0.6 0.14 295)', Assigned: 'oklch(0.6 0.14 255)' };
+    const orders = [
+      ['NL-24026', 'Danube Retail SRL', 'Bucharest, RO', 'Milan, IT', 'Invoiced', '€6,880'],
+      ['NL-24022', 'Danube Retail SRL', 'Bucharest, RO', 'Milan, IT', 'Assigned', '€2,450'],
+      ['NL-24025', 'Baltic Grain Sp. z o.o.', 'Krakow, PL', 'Prague, CZ', 'Invoiced', '€960'],
+      ['NL-24024', 'Moldovan Fresh', 'Chisinau, MD', 'Warsaw, PL', 'Invoiced', '€1,680'],
+      ['NL-24021', 'Baltic Grain Sp. z o.o.', 'Warsaw, PL', 'Berlin, DE', 'Invoiced', '€1,860'],
+      ['NL-24023', 'Rhine Chemicals GmbH', 'Gdansk, PL', 'Rotterdam, NL', 'Invoiced', '€2,100']
+    ].map(([ref, customer, from, to, status, price]) => ({ ref, customer, from, to, status, price, dot: dots[status] }));
+    return { accent, rowPad, openStages, tasks, orders, remaining: tasks.filter(t => !t.check).length };
+  }
+}
+</script>
+</body>
+</html>

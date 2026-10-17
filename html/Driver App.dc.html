@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e9e8e4;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px">
+  <div style="width:390px;height:844px;flex:none;background:#f5f5f3;border-radius:44px;border:10px solid #1c1c1a;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,0.15)">
+
+    <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:14px;font-weight:600">
+      <span>9:41</span><span style="width:96px;height:26px;background:#1c1c1a;border-radius:13px"></span><span style="font-family:'Geist Mono',monospace;font-size:12px">100%</span>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:12px 16px 24px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:13px;color:#77766f">Good afternoon</div>
+          <div style="font-size:24px;font-weight:600;letter-spacing:-0.02em">Piotr</div>
+        </div>
+        <div style="position:relative">
+          <button onClick="{{ toggleMenu }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #e3e2dd;background:#fff;font:inherit;font-size:14px;font-weight:600;color:#1c1c1a;cursor:pointer">P</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;right:0;top:52px;z-index:3;background:#fff;border:1px solid #e7e6e1;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.1);padding:6px;width:160px">
+              <button style="width:100%;height:44px;border:0;background:transparent;border-radius:8px;font:inherit;font-size:14px;text-align:left;padding:0 12px;color:oklch(0.48 0.17 25);cursor:pointer" style-hover="background:#f5f5f3">Log out</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:600;color:#77766f;letter-spacing:0.04em;text-transform:uppercase;padding:0 4px">Current trip</div>
+
+      <section style="background:#fff;border:1px solid #e7e6e1;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'Geist Mono',monospace;font-size:15px;font-weight:500">NL-24024</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:12px;padding:4px 8px;border:1px solid #e3e2dd;border-radius:6px">B 456 TMS</span>
+        </div>
+
+        <div style="display:flex;gap:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;padding:6px 0">
+            <span style="width:10px;height:10px;border-radius:50%;border:2px solid #1c1c1a"></span>
+            <span style="flex:1;border-left:2px dashed #cfcec8;margin:4px 0"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:#1c1c1a"></span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:18px;font-weight:600">Chisinau, MD</div>
+              <div style="font-size:13px;color:#77766f">Pickup Sep 15, 03:45 PM</div>
+            </div>
+            <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#77766f">971 km · 14h 17m</div>
+            <div style="font-size:18px;font-weight:600">Warsaw, PL</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:13px;padding:6px 10px;border-radius:8px;background:#f2f1ed">Apples</span>
+          <span style="font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;background:oklch(0.95 0.03 230);color:oklch(0.42 0.11 230)">Keep at +4°C</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;border-top:1px solid #efeee9">
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding-top:12px">
+            <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="height:4px;border-radius:2px;background:{{ s.bar }}"></div>
+                <div style="font-size:12px;font-weight:{{ s.weight }};color:{{ s.color }}">{{ s.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ advance }}" style="height:52px;border:0;border-radius:14px;background:#1c1c1a;color:#fff;font:inherit;font-size:16px;font-weight:600;cursor:pointer" style-active="transform:scale(0.98)">{{ nextLabel }}</button>
+          </sc-if>
+          <sc-if value="{{ canUndo }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ undo }}" style="height:44px;border:0;background:transparent;font:inherit;font-size:14px;color:#77766f;cursor:pointer">Undo last step</button>
+          </sc-if>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid #e7e6e1;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <h2 style="margin:0;font-size:16px;font-weight:600">Proof of delivery</h2>
+          <span style="font-size:12px;color:{{ podStatusColor }}">{{ podStatus }}</span>
+        </div>
+
+        <label style="min-height:56px;border:1px dashed #cfcec8;border-radius:14px;display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;background:#fafaf8">
+          <span style="width:36px;height:36px;flex:none;border-radius:10px;background:#f2f1ed;display:flex;align-items:center;justify-content:center;font-size:18px;color:#5d5c56">+</span>
+          <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+            <span style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fileTitle }}</span>
+            <span style="font-size:12px;color:#77766f">{{ fileSub }}</span>
+          </span>
+          <input type="file" accept="image/*,application/pdf" capture="environment" onChange="{{ onFile }}" style="display:none">
+        </label>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <span style="font-size:13px;font-weight:500">Receiver signature</span>
+            <button onClick="{{ clearSig }}" style="height:32px;border:0;background:transparent;font:inherit;font-size:13px;color:#77766f;cursor:pointer;padding:0 4px">Clear</button>
+          </div>
+          <div style="position:relative;height:170px;border:1px solid #e3e2dd;border-radius:14px;background:#fff;overflow:hidden">
+            <canvas ref="{{ sigRef }}" onPointerDown="{{ sigDown }}" onPointerMove="{{ sigMove }}" onPointerUp="{{ sigUp }}" onPointerLeave="{{ sigUp }}" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas>
+            <sc-if value="{{ sigEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute;left:16px;right:16px;bottom:34px;border-top:1px solid #e3e2dd;pointer-events:none"></div>
+              <div style="position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:12px;color:#9a9992;pointer-events:none">Sign here</div>
+            </sc-if>
+          </div>
+        </div>
+
+        <button onClick="{{ savePod }}" style="height:52px;border:0;border-radius:14px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;background:{{ saveBg }};color:#fff">{{ saveLabel }}</button>
+      </section>
+
+      <div style="font-size:12px;font-weight:600;color:#77766f;letter-spacing:0.04em;text-transform:uppercase;padding:8px 4px 0">Completed</div>
+
+      <section style="background:#fff;border:1px solid #e7e6e1;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'Geist Mono',monospace;font-size:14px;font-weight:500">NL-24021</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:oklch(0.96 0.03 155);color:oklch(0.42 0.11 155)"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.6 0.12 155)"></span>Delivered</span>
+        </div>
+        <div style="font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px">Warsaw, PL <span style="color:#a9a8a1;font-weight:400">→</span> Berlin, DE</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:#77766f">
+          <span>Milling wheat, 24t</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:12px">621 km · 9h 8m</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#77766f;padding-top:8px;border-top:1px solid #efeee9">
+          <span>Pickup Sep 20, 03:45 PM</span>
+          <span style="font-family:'Geist Mono',monospace">WGM 12345</span>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:920}}">
+class Component extends DCLogic {
+  state = { step: 0, history: [], menuOpen: false, file: null, sigEmpty: true, saved: false };
+  sigRef = React.createRef();
+  drawing = false;
+  componentDidMount() { this.setupCanvas(); }
+  setupCanvas() {
+    const c = this.sigRef.current; if (!c) return;
+    const r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    c.width = r.width * d; c.height = r.height * d;
+    const ctx = c.getContext('2d'); ctx.scale(d, d);
+    ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1c1c1a';
+  }
+  pos(e) { const r = this.sigRef.current.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  renderVals() {
+    const s = this.state;
+    const labels = ['Arrived', 'Loaded', 'In transit', 'Delivered'];
+    const next = ['Mark as loaded', 'Start transit', 'Mark as delivered'];
+    const steps = labels.map((label, i) => ({
+      label, bar: i <= s.step ? '#1c1c1a' : '#efeee9', color: i <= s.step ? '#1c1c1a' : '#9a9992', weight: i === s.step ? 600 : 400
+    }));
+    const ready = !!s.file && !s.sigEmpty;
+    return {
+      steps, hasNext: s.step < 3, nextLabel: next[s.step] ?? '', canUndo: s.history.length > 0,
+      advance: () => this.setState(st => ({ step: Math.min(3, st.step + 1), history: [...st.history, st.step] })),
+      undo: () => this.setState(st => ({ step: st.history[st.history.length - 1], history: st.history.slice(0, -1) })),
+      menuOpen: s.menuOpen, toggleMenu: () => this.setState(st => ({ menuOpen: !st.menuOpen })),
+      fileTitle: s.file ?? 'Add POD photo or file',
+      fileSub: s.file ? 'Tap to replace' : 'Camera, image or PDF',
+      onFile: e => this.setState({ file: e.target.files[0]?.name ?? null, saved: false }),
+      sigRef: this.sigRef, sigEmpty: s.sigEmpty,
+      sigDown: e => { this.drawing = true; const ctx = this.sigRef.current.getContext('2d'); const [x, y] = this.pos(e); ctx.beginPath(); ctx.moveTo(x, y); e.target.setPointerCapture?.(e.pointerId); },
+      sigMove: e => { if (!this.drawing) return; const ctx = this.sigRef.current.getContext('2d'); const [x, y] = this.pos(e); ctx.lineTo(x, y); ctx.stroke(); if (this.state.sigEmpty) this.setState({ sigEmpty: false, saved: false }); },
+      sigUp: () => { this.drawing = false; },
+      clearSig: () => { const c = this.sigRef.current; c.getContext('2d').clearRect(0, 0, c.width, c.height); this.setState({ sigEmpty: true, saved: false }); },
+      podStatus: s.saved ? 'Saved' : ready ? 'Ready to save' : `${(s.file ? 1 : 0) + (s.sigEmpty ? 0 : 1)} of 2 added`,
+      podStatusColor: s.saved ? 'oklch(0.48 0.12 155)' : '#77766f',
+      saveBg: s.saved ? 'oklch(0.55 0.12 155)' : ready ? '#1c1c1a' : '#c9c8c2',
+      saveLabel: s.saved ? 'POD saved ✓' : 'Save POD',
+      savePod: () => ready && this.setState({ saved: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

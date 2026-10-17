@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f3;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+input::placeholder,textarea::placeholder{color:#9a9992}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <header style="position:sticky;top:0;z-index:5;background:rgba(245,245,243,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #e7e6e1">
+    <div style="max-width:1440px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1;max-width:520px;height:36px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#fff;border:1px solid #e3e2dd;border-radius:8px">
+        <span style="width:12px;height:12px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+        <input placeholder="Search orders, companies, deals" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f;padding:2px 6px;border:1px solid #e3e2dd;border-radius:4px">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:6px">
+        <button style="height:36px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#f0efeb">EN <span style="color:#9a9992;font-size:10px">▾</span></button>
+        <button style="width:36px;height:36px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#f0efeb" title="Dark mode"><span style="width:12px;height:12px;border-radius:50%;background:#1c1c1a;box-shadow:inset -4px -2px 0 0 #fff"></span></button>
+        <div style="width:36px;height:36px;border-radius:50%;background:#e8f3ec;color:#3a3a36;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">AK</div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1440px;width:100%;margin:0 auto;padding:24px 28px 48px;display:flex;flex-direction:column;gap:20px">
+    <nav style="display:flex;align-items:center;gap:8px;font-size:13px;color:#77766f">
+      <a href="#" style="color:#77766f">Orders</a><span style="color:#c9c8c2">/</span><span style="color:#1c1c1a;font-family:'Geist Mono',monospace;font-size:12px">NL-24026</span>
+    </nav>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em;font-family:'Geist Mono',monospace">NL-24026</h1>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:oklch(0.96 0.03 295);color:oklch(0.45 0.14 295)"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.6 0.14 295)"></span>Invoiced</span>
+        </div>
+        <a href="Companies.dc.html" style="font-size:14px;color:#77766f">Danube Retail SRL</a>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button style="height:36px;padding:0 14px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer" style-hover="background:#f0efeb">Clone</button>
+        <button style="height:36px;padding:0 14px;border:0;background:#1c1c1a;color:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:#33332f">Create invoice</button>
+      </div>
+    </div>
+
+    <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:16px 22px;overflow-x:auto">
+      <div style="display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:8px;min-width:560px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="height:4px;border-radius:2px;background:{{ s.bar }}"></div>
+            <div style="font-size:13px;font-weight:{{ s.weight }};color:{{ s.color }}">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <div style="flex:1.6 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,1.2fr) minmax(0,1fr);align-items:center;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:12px;color:#77766f">Origin</div>
+              <div style="font-size:18px;font-weight:600">Bucharest, RO</div>
+              <div style="font-size:12px;color:#77766f">Pickup <span style="color:#a9a8a1">· not scheduled</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#1c1c1a">1,600 km · 23h 32m</div>
+              <div style="width:100%;display:flex;align-items:center;gap:0">
+                <span style="width:9px;height:9px;border-radius:50%;border:2px solid #1c1c1a;flex:none"></span>
+                <span style="flex:1;border-top:2px dashed #cfcec8"></span>
+                <span style="width:9px;height:9px;border-radius:50%;background:#1c1c1a;flex:none"></span>
+              </div>
+              <div style="font-size:11px;color:#9a9992">Road estimate</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;text-align:right">
+              <div style="font-size:12px;color:#77766f">Destination</div>
+              <div style="font-size:18px;font-weight:600">Milan, IT</div>
+              <div style="font-size:12px;color:#77766f">Delivery <span style="color:#a9a8a1">· not scheduled</span></div>
+            </div>
+          </div>
+          <div style="border-top:1px solid #efeee9;padding-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:12px;color:#77766f">Load type</div><div style="font-size:14px;font-weight:500">FTL</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:12px;color:#77766f">Weight</div><div style="font-size:14px;color:#a9a8a1">Not set</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:12px;color:#77766f">Pickup date</div><div style="font-size:14px;color:#a9a8a1">Not set</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:12px;color:#77766f">Delivery date</div><div style="font-size:14px;color:#a9a8a1">Not set</div></div>
+          </div>
+        </section>
+
+        <section style="background:#efeee9;border:1px solid #e7e6e1;border-radius:12px;overflow:hidden;display:flex;flex-wrap:wrap;gap:1px">
+          <div style="flex:1 1 160px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:13px;color:#77766f">Revenue</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500">€6,880</div>
+          </div>
+          <div style="flex:1 1 160px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:13px;color:#77766f">Cost</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500">€0</div>
+            <div style="font-size:12px;color:oklch(0.5 0.11 70)">No carrier cost recorded</div>
+          </div>
+          <div style="flex:1 1 160px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:13px;color:#77766f">Margin</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500;color:oklch(0.48 0.12 155)">€6,880</div>
+            <div style="font-size:12px;color:#77766f">100% of revenue</div>
+          </div>
+        </section>
+
+        <div style="display:flex;flex-wrap:wrap;gap:20px">
+          <section style="flex:1 1 260px;background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Carrier</h2>
+            <div style="border:1px dashed #d9d8d2;border-radius:10px;padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px">
+              <div style="font-size:14px;color:#5d5c56">Not assigned yet.</div>
+              <button style="height:32px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer" style-hover="background:#f0efeb">Assign in Dispatch →</button>
+            </div>
+          </section>
+          <section style="flex:1 1 260px;background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Invoice</h2>
+            <a href="#" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #efeee9;border-radius:10px" style-hover="background:#fafaf8">
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <span style="font-family:'Geist Mono',monospace;font-size:13px;font-weight:500">INV-1005</span>
+                <span style="font-family:'Geist Mono',monospace;font-size:12px;color:#77766f">€6,880</span>
+              </div>
+              <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:oklch(0.96 0.03 155);color:oklch(0.42 0.11 155)"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.6 0.12 155)"></span>Paid</span>
+            </a>
+          </section>
+        </div>
+
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Documents</h2>
+            <div style="font-size:13px;color:#77766f">{{ docCount }}</div>
+          </div>
+          <sc-for list="{{ docs }}" as="d" hint-placeholder-count="0">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #efeee9;border-radius:8px">
+              <span style="font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;padding:2px 6px;border-radius:4px;background:#f2f1ed;color:#5d5c56">{{ d.type }}</span>
+              <span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.name }}</span>
+              <span style="font-size:12px;color:#9a9992">Just now</span>
+            </div>
+          </sc-for>
+          <div style="border:1px dashed #d9d8d2;border-radius:10px;padding:16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:2px;padding:3px;background:#f2f1ed;border-radius:8px;width:max-content">
+                <sc-for list="{{ docTypes }}" as="t" hint-placeholder-count="4">
+                  <button onClick="{{ t.select }}" style="height:26px;padding:0 10px;border:0;border-radius:6px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};box-shadow:{{ t.shadow }}">{{ t.label }}</button>
+                </sc-for>
+              </div>
+              <div style="font-size:13px;color:{{ fileColor }}">{{ fileLabel }}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <label style="height:32px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer;display:flex;align-items:center" style-hover="background:#f0efeb">Choose file<input type="file" onChange="{{ onFile }}" style="display:none"></label>
+              <button onClick="{{ upload }}" style="height:32px;padding:0 12px;border:0;border-radius:7px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;background:{{ uploadBg }};color:#fff">Upload</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section style="flex:1 1 340px;min-width:0;background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px;position:sticky;top:84px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+          <h2 style="margin:0;font-size:15px;font-weight:600">Tasks &amp; notes</h2>
+          <div style="font-size:13px;color:#77766f">{{ openCount }}</div>
+        </div>
+        <div style="border:1px solid #e3e2dd;border-radius:10px;display:flex;flex-direction:column">
+          <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="{{ placeholder }}" rows="2" style="border:0;outline:0;resize:none;font:inherit;font-size:13px;padding:12px;background:transparent;color:#1c1c1a;border-radius:10px"></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border-top:1px solid #f3f2ee">
+            <div style="display:flex;gap:2px;padding:3px;background:#f2f1ed;border-radius:7px">
+              <sc-for list="{{ kinds }}" as="k" hint-placeholder-count="2">
+                <button onClick="{{ k.select }}" style="height:24px;padding:0 10px;border:0;border-radius:5px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;background:{{ k.bg }};color:{{ k.color }};box-shadow:{{ k.shadow }}">{{ k.label }}</button>
+              </sc-for>
+            </div>
+            <button onClick="{{ save }}" style="height:28px;padding:0 12px;border:0;border-radius:6px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;background:{{ saveBg }};color:#fff">Save</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ items }}" as="it" hint-placeholder-count="1">
+            <div style="display:flex;gap:12px;padding:12px 0;border-top:1px solid #efeee9">
+              <span style="flex:none;height:20px;margin-top:1px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:{{ it.tagBg }};color:{{ it.tagColor }}">{{ it.tag }}</span>
+              <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                <div style="font-size:14px;font-weight:500;text-wrap:pretty">{{ it.title }}</div>
+                <div style="font-size:12px;color:#77766f">{{ it.sub }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { kind: 'Note', draft: '', items: [{ tag: 'Draft', title: 'Draft invoice INV-1005', sub: 'Created from the order.' }],
+    docType: 'CMR', file: null, docs: [] };
+  seg(on) { return { bg: on ? '#fff' : 'transparent', color: on ? '#1c1c1a' : '#77766f', shadow: on ? '0 1px 2px rgba(0,0,0,0.08)' : 'none' }; }
+  renderVals() {
+    const s = this.state;
+    const current = 4;
+    const steps = ['Booked', 'Assigned', 'In transit', 'Delivered', 'Invoiced'].map((label, i) => ({
+      label, bar: i <= current ? '#1c1c1a' : '#efeee9', color: i <= current ? '#1c1c1a' : '#9a9992', weight: i === current ? 600 : 400
+    }));
+    const tags = { Note: ['#f2f1ed', '#5d5c56'], Task: ['oklch(0.95 0.03 255)', 'oklch(0.45 0.13 255)'], Draft: ['#f2f1ed', '#5d5c56'] };
+    const items = s.items.map(it => ({ ...it, tagBg: tags[it.tag][0], tagColor: tags[it.tag][1] }));
+    const canSave = s.draft.trim().length > 0;
+    return {
+      steps, items, draft: s.draft,
+      openCount: `${s.items.length} item${s.items.length === 1 ? '' : 's'}`,
+      placeholder: s.kind === 'Note' ? 'Add a note…' : 'Describe the task…',
+      kinds: ['Note', 'Task'].map(label => ({ label, ...this.seg(s.kind === label), select: () => this.setState({ kind: label }) })),
+      onDraft: e => this.setState({ draft: e.target.value }),
+      saveBg: canSave ? '#1c1c1a' : '#c9c8c2',
+      save: () => canSave && this.setState(st => ({ draft: '', items: [{ tag: st.kind, title: st.draft.trim(), sub: 'Anna Kowalska · just now' }, ...st.items] })),
+      docTypes: ['CMR', 'POD', 'Invoice', 'Other'].map(label => ({ label, ...this.seg(s.docType === label), select: () => this.setState({ docType: label }) })),
+      fileLabel: s.file ? s.file : 'No file chosen. CMR, POD or any PDF/image.',
+      fileColor: s.file ? '#1c1c1a' : '#77766f',
+      onFile: e => this.setState({ file: e.target.files[0]?.name ?? null }),
+      uploadBg: s.file ? '#1c1c1a' : '#c9c8c2',
+      upload: () => s.file && this.setState(st => ({ docs: [...st.docs, { type: st.docType, name: st.file }], file: null })),
+      docs: s.docs,
+      docCount: s.docs.length ? `${s.docs.length} uploaded` : 'None yet'
+    };
+  }
+}
+</script>
+</body>
+</html>

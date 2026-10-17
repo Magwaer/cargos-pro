@@ -1,0 +1,96 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cargos
+      POSTGRES_PASSWORD: cargos
+      POSTGRES_DB: cargos
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cargos -d cargos"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      NODE_ENV: development
+      SEED_DEMO: "true"
+      DATABASE_URL: postgres://cargos:cargos@db:5432/cargos
+      JWT_SECRET: dev-only-change-me
+      UPLOAD_DIR: /data/uploads
+      PUBLIC_URL: http://localhost:5173
+      PORT: 3000
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_FROM: ${TWILIO_FROM:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      QBO_CLIENT_ID: ${QBO_CLIENT_ID:-}
+      QBO_CLIENT_SECRET: ${QBO_CLIENT_SECRET:-}
+      SPACES_ENDPOINT: ${SPACES_ENDPOINT:-}
+      SPACES_REGION: ${SPACES_REGION:-fra1}
+      SPACES_BUCKET: ${SPACES_BUCKET:-}
+      SPACES_ACCESS_KEY: ${SPACES_ACCESS_KEY:-}
+      SPACES_SECRET_KEY: ${SPACES_SECRET_KEY:-}
+    volumes:
+      - ./backend:/app
+      - api_modules:/app/node_modules
+      - uploads:/data/uploads
+    ports:
+      - "3010:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "if [ ! -d node_modules/express ]; then npm install; fi && node --watch src/index.js"
+
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    environment:
+      API_PROXY: http://api:3000
+      CHOKIDAR_USEPOLLING: "1"
+    volumes:
+      - ./frontend:/app
+      - web_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    command: sh -c "if [ ! -d node_modules/react ]; then npm install; fi && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  mcp:
+    build: ./mcp
+    environment:
+      NODE_ENV: development
+      CARGOS_API_URL: http://api:3000
+      CARGOS_API_KEY: ${CARGOS_API_KEY:-}
+      CARGOS_EMAIL: ${CARGOS_EMAIL:-}
+      CARGOS_PASSWORD: ${CARGOS_PASSWORD:-}
+      MCP_TRANSPORT: http
+      MCP_PORT: 3100
+      MCP_BIND: 0.0.0.0
+      MCP_AUTH_PATH: /data/auth.json
+      MCP_SHARED_SECRET: ${MCP_SHARED_SECRET:-}
+    volumes:
+      - ./mcp:/app
+      - mcp_modules:/app/node_modules
+      - mcp_auth:/data
+    ports:
+      - "3100:3100"
+    depends_on:
+      - api
+    command: sh -c "if [ ! -d node_modules/@modelcontextprotocol ]; then npm install; fi && node --watch src/index.js"
+
+volumes:
+  pgdata:
+  api_modules:
+  web_modules:
+  uploads:
+  mcp_modules:
+  mcp_auth:

@@ -1,0 +1,6 @@
+**/node_modules
+**/.git
+frontend/dist
+certbot-data
+**/*.log
+.env

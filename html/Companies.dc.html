@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f3;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+input::placeholder{color:#9a9992}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <header style="position:sticky;top:0;z-index:5;background:rgba(245,245,243,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #e7e6e1">
+    <div style="max-width:1440px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1;max-width:520px;height:36px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#fff;border:1px solid #e3e2dd;border-radius:8px">
+        <span style="width:12px;height:12px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+        <input placeholder="Search orders, companies, deals" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f;padding:2px 6px;border:1px solid #e3e2dd;border-radius:4px">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:6px">
+        <button style="height:36px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#f0efeb">EN <span style="color:#9a9992;font-size:10px">▾</span></button>
+        <button style="width:36px;height:36px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#f0efeb" title="Dark mode"><span style="width:12px;height:12px;border-radius:50%;background:#1c1c1a;box-shadow:inset -4px -2px 0 0 #fff"></span></button>
+        <div style="width:36px;height:36px;border-radius:50%;background:#e8f3ec;color:#3a3a36;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">AK</div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1440px;width:100%;margin:0 auto;padding:32px 28px 48px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em">Companies</h1>
+        <div style="font-size:14px;color:#77766f">Customers, carriers, and the ones who are both.</div>
+      </div>
+      <button style="height:36px;padding:0 14px;border:0;background:#1c1c1a;color:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:#33332f">New company</button>
+    </div>
+
+    <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;display:flex;flex-direction:column">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #efeee9">
+        <div style="display:flex;gap:2px;padding:3px;background:#f2f1ed;border-radius:8px">
+          <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="3">
+            <button onClick="{{ tab.select }}" style="height:28px;padding:0 12px;border:0;border-radius:6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;background:{{ tab.bg }};color:{{ tab.color }};box-shadow:{{ tab.shadow }}">{{ tab.label }} <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#9a9992">{{ tab.count }}</span></button>
+          </sc-for>
+        </div>
+        <div style="width:260px;max-width:100%;height:32px;display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid #e3e2dd;border-radius:7px">
+          <span style="width:11px;height:11px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+          <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Filter by name or city" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        </div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <div style="min-width:720px;padding:0 16px 6px">
+          <div style="display:grid;grid-template-columns:minmax(0,2fr) 110px minmax(0,1fr) 110px 70px;gap:16px;padding:10px 0;font-size:12px;color:#77766f;border-bottom:1px solid #efeee9">
+            <div>Name</div><div>Role</div><div>City</div><div>Payment terms</div><div style="text-align:right">Orders</div>
+          </div>
+          <sc-for list="{{ rows }}" as="c" hint-placeholder-count="7">
+            <div style="display:grid;grid-template-columns:minmax(0,2fr) 110px minmax(0,1fr) 110px 70px;gap:16px;align-items:center;padding:{{ rowPad }} 0;font-size:14px;border-bottom:1px solid #f3f2ee;cursor:pointer;opacity:{{ c.opacity }}" style-hover="background:#fafaf8">
+              <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                <div style="width:30px;height:30px;flex:none;border-radius:7px;background:{{ c.avBg }};color:#3a3a36;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ c.initials }}</div>
+                <div style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.name }}</div>
+                <sc-for list="{{ c.flags }}" as="f" hint-placeholder-count="0">
+                  <span style="flex:none;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+                <span style="width:7px;height:7px;border-radius:50%;background:{{ c.roleDot }}"></span>{{ c.role }}
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                <span>{{ c.city }}</span><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f">{{ c.country }}</span>
+              </div>
+              <div style="font-family:'Geist Mono',monospace;font-size:13px">{{ c.terms }}</div>
+              <div style="font-family:'Geist Mono',monospace;font-size:13px;text-align:right;color:{{ c.ordersColor }}">{{ c.orders }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 0;text-align:center;font-size:14px;color:#77766f">No companies match “{{ query }}”.</div>
+          </sc-if>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid #efeee9;font-size:13px;color:#77766f">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="font-family:'Geist Mono',monospace;font-size:12px">{{ rangeText }}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span>Rows per page</span>
+            <sc-for list="{{ sizes }}" as="s" hint-placeholder-count="3">
+              <button onClick="{{ s.select }}" style="border:0;background:transparent;padding:2px 4px;font:inherit;font-family:'Geist Mono',monospace;font-size:12px;cursor:pointer;color:{{ s.color }};font-weight:{{ s.weight }}">{{ s.n }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button onClick="{{ prev }}" style="height:30px;padding:0 10px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font:inherit;font-size:13px;cursor:pointer;color:{{ prevColor }}" style-hover="background:#f0efeb">← Prev</button>
+          <sc-for list="{{ pageBtns }}" as="p" hint-placeholder-count="2">
+            <button onClick="{{ p.go }}" style="width:30px;height:30px;border:1px solid {{ p.border }};border-radius:7px;font:inherit;font-family:'Geist Mono',monospace;font-size:12px;cursor:pointer;background:{{ p.bg }};color:{{ p.color }}">{{ p.n }}</button>
+          </sc-for>
+          <button onClick="{{ next }}" style="height:30px;padding:0 10px;border:1px solid #e3e2dd;background:#fff;border-radius:7px;font:inherit;font-size:13px;cursor:pointer;color:{{ nextColor }}" style-hover="background:#f0efeb">Next →</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;hideBlacklisted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;pageSize&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[5,10,25],&quot;default&quot;:5,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'All', query: '' };
+  renderVals() {
+    const rowPad = (this.props.density ?? 'comfortable') === 'compact' ? '8px' : '12px';
+    const data = [
+      ['Baltic Grain Sp. z o.o.', 'Customer', 'Warsaw', 'PL', 21, 2, []],
+      ['Blacklist Cargo', 'Carrier', 'Cologne', 'DE', 7, 0, ['Watch', 'Blacklisted']],
+      ['Danube Retail SRL', 'Customer', 'Bucharest', 'RO', 30, 2, []],
+      ['Moldovan Fresh', 'Customer', 'Chisinau', 'MD', 14, 1, []],
+      ['Rhine Chemicals GmbH', 'Customer', 'Duisburg', 'DE', 30, 2, []],
+      ['SudEst Haulage', 'Carrier', 'Constanta', 'RO', 14, 0, []],
+      ['TransKarpaty', 'Carrier', 'Rzeszow', 'PL', 21, 0, []]
+    ];
+    const flagStyle = {
+      Watch: { bg: 'oklch(0.95 0.05 80)', color: 'oklch(0.45 0.1 70)' },
+      Blacklisted: { bg: 'oklch(0.95 0.03 25)', color: 'oklch(0.48 0.17 25)' }
+    };
+    const roleDot = { Customer: 'oklch(0.6 0.14 255)', Carrier: 'oklch(0.65 0.14 55)', Both: 'oklch(0.6 0.14 295)' };
+    const av = ['#e6eef9', '#f6ebe2', '#e8f3ec', '#efe9f6', '#f3f1e4'];
+    const { tab, query } = this.state;
+    const q = query.trim().toLowerCase();
+    const hidePassive = this.props.hideBlacklisted ?? false;
+    const all = data.map(([name, role, city, country, terms, orders, flags], i) => ({
+      name, role, city, country, terms: `Net ${terms}`, orders,
+      initials: name.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase(),
+      avBg: av[i % av.length], roleDot: roleDot[role],
+      flags: flags.map(l => ({ label: l, ...flagStyle[l] })),
+      blacklisted: flags.includes('Blacklisted'),
+      opacity: flags.includes('Blacklisted') ? 0.7 : 1,
+      ordersColor: orders ? '#1c1c1a' : '#a9a8a1'
+    })).filter(c => !(hidePassive && c.blacklisted));
+    const count = r => r === 'All' ? all.length : all.filter(c => c.role === r.slice(0, -1) || c.role === 'Both').length;
+    const tabs = ['All', 'Customers', 'Carriers'].map(label => {
+      const on = tab === label;
+      return { label, count: count(label), bg: on ? '#fff' : 'transparent', color: on ? '#1c1c1a' : '#77766f',
+        shadow: on ? '0 1px 2px rgba(0,0,0,0.08)' : 'none', select: () => this.setState({ tab: label, page: 1 }) };
+    });
+    const rows = all.filter(c => (tab === 'All' || c.role === tab.slice(0, -1) || c.role === 'Both') &&
+      (!q || c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)));
+    const size = this.state.pageSize ?? this.props.pageSize ?? 5;
+    const pages = Math.max(1, Math.ceil(rows.length / size));
+    const page = Math.min(this.state.page ?? 1, pages);
+    const start = (page - 1) * size;
+    const pageRows = rows.slice(start, start + size);
+    const go = p => () => this.setState({ page: Math.max(1, Math.min(pages, p)) });
+    const pageBtns = Array.from({ length: pages }, (_, i) => {
+      const on = i + 1 === page;
+      return { n: i + 1, go: go(i + 1), bg: on ? '#1c1c1a' : 'transparent', color: on ? '#fff' : '#1c1c1a', border: on ? '#1c1c1a' : '#e3e2dd' };
+    });
+    const sizes = [5, 10, 25].map(n => ({ n, on: n === size, color: n === size ? '#1c1c1a' : '#9a9992', weight: n === size ? 600 : 400,
+      select: () => this.setState({ pageSize: n, page: 1 }) }));
+    return { rowPad, tabs, rows: pageRows, query, empty: rows.length === 0, pageBtns, sizes,
+      rangeText: rows.length ? `${start + 1}–${start + pageRows.length} of ${rows.length}` : '0 of 0',
+      prev: go(page - 1), next: go(page + 1),
+      prevColor: page > 1 ? '#1c1c1a' : '#c9c8c2', nextColor: page < pages ? '#1c1c1a' : '#c9c8c2',
+      onQuery: e => this.setState({ query: e.target.value, page: 1 }) };
+  }
+}
+</script>
+</body>
+</html>

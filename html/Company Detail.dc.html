@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f3;color:#1c1c1a;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#1c1c1a;text-decoration:none}a:hover{color:oklch(0.5 0.14 255)}
+*{box-sizing:border-box}
+input::placeholder,textarea::placeholder{color:#9a9992}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <header style="position:sticky;top:0;z-index:5;background:rgba(245,245,243,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #e7e6e1">
+    <div style="max-width:1440px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1;max-width:520px;height:36px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#fff;border:1px solid #e3e2dd;border-radius:8px">
+        <span style="width:12px;height:12px;border:1.5px solid #9a9992;border-radius:50%;flex:none"></span>
+        <input placeholder="Search orders, companies, deals" style="flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:#1c1c1a">
+        <span style="font-family:'Geist Mono',monospace;font-size:11px;color:#77766f;padding:2px 6px;border:1px solid #e3e2dd;border-radius:4px">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:6px">
+        <button style="height:36px;padding:0 12px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#f0efeb">EN <span style="color:#9a9992;font-size:10px">▾</span></button>
+        <button style="width:36px;height:36px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:#f0efeb" title="Dark mode"><span style="width:12px;height:12px;border-radius:50%;background:#1c1c1a;box-shadow:inset -4px -2px 0 0 #fff"></span></button>
+        <div style="width:36px;height:36px;border-radius:50%;background:#e8f3ec;color:#3a3a36;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">AK</div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1440px;width:100%;margin:0 auto;padding:24px 28px 48px;display:flex;flex-direction:column;gap:20px">
+    <nav style="display:flex;align-items:center;gap:8px;font-size:13px;color:#77766f">
+      <a href="Companies.dc.html" style="color:#77766f">Companies</a><span style="color:#c9c8c2">/</span><span style="color:#1c1c1a">Danube Retail SRL</span>
+    </nav>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+      <div style="display:flex;align-items:center;gap:16px;min-width:0">
+        <div style="width:52px;height:52px;flex:none;border-radius:12px;background:#e8f3ec;color:#3a3a36;font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center">DR</div>
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em">Danube Retail SRL</h1>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:#f2f1ed"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.6 0.14 255)"></span>Customer</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:14px;color:#77766f">
+            <span>Bucharest, RO</span>
+            <a href="mailto:logistics@danuberetail.example" style="color:#77766f">logistics@danuberetail.example</a>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button style="height:36px;padding:0 14px;border:1px solid #e3e2dd;background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;color:#1c1c1a;cursor:pointer" style-hover="background:#f0efeb">Edit</button>
+        <button style="height:36px;padding:0 14px;border:0;background:#1c1c1a;color:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:#33332f">New order</button>
+      </div>
+    </div>
+
+    <section style="background:#efeee9;border:1px solid #e7e6e1;border-radius:12px;overflow:hidden;display:flex;flex-wrap:wrap;gap:1px">
+      <div style="flex:1 1 170px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px;color:#77766f">Revenue</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500">€9,330</div>
+        <div style="font-size:12px;color:#77766f">Across 2 orders</div>
+      </div>
+      <div style="flex:1 1 170px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px;color:#77766f">Open orders</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500">1</div>
+        <div style="font-size:12px;color:#77766f">NL-24022 · Assigned</div>
+      </div>
+      <div style="flex:1 1 170px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px;color:#77766f">Won deals</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500;color:oklch(0.48 0.12 155)">€6,400</div>
+        <div style="font-size:12px;color:#77766f">1 deal</div>
+      </div>
+      <div style="flex:1 1 170px;background:#fff;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px;color:#77766f">Payment terms</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500">Net 30</div>
+        <div style="font-size:12px;color:#77766f">Days after invoice</div>
+      </div>
+    </section>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <div style="flex:1.6 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px 8px;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:10px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Orders</h2>
+            <a href="#" style="font-size:13px;color:#77766f">All orders →</a>
+          </div>
+          <div style="overflow-x:auto">
+            <div style="min-width:520px">
+              <div style="display:grid;grid-template-columns:110px minmax(0,1.6fr) 110px 90px;gap:16px;padding:8px 0;font-size:12px;color:#77766f;border-bottom:1px solid #efeee9">
+                <div>Reference</div><div>Lane</div><div>Status</div><div style="text-align:right">Price</div>
+              </div>
+              <sc-for list="{{ orders }}" as="o" hint-placeholder-count="2">
+                <a href="Order Detail.dc.html" style="display:grid;grid-template-columns:110px minmax(0,1.6fr) 110px 90px;gap:16px;align-items:center;padding:13px 0;font-size:14px;border-bottom:1px solid #f3f2ee;color:#1c1c1a" style-hover="background:#fafaf8">
+                  <div style="font-family:'Geist Mono',monospace;font-size:13px;font-weight:500">{{ o.ref }}</div>
+                  <div style="display:flex;align-items:center;gap:8px;min-width:0"><span>{{ o.from }}</span><span style="color:#a9a8a1">→</span><span>{{ o.to }}</span></div>
+                  <div style="display:flex;align-items:center;gap:7px;font-size:13px"><span style="width:7px;height:7px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.status }}</div>
+                  <div style="font-family:'Geist Mono',monospace;font-size:13px;text-align:right">{{ o.price }}</div>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Deals</h2>
+            <button style="border:0;background:transparent;padding:0;font:inherit;font-size:13px;color:#77766f;cursor:pointer" style-hover="color:#1c1c1a">+ New deal</button>
+          </div>
+          <a href="#" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #efeee9;border-radius:10px;color:#1c1c1a" style-hover="background:#fafaf8">
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+              <div style="font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px">Bucharest <span style="color:#a9a8a1">→</span> Milan retail FTL</div>
+              <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#77766f">€6,400</div>
+            </div>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:oklch(0.96 0.03 155);color:oklch(0.42 0.11 155)"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.6 0.12 155)"></span>Won</span>
+          </a>
+        </section>
+      </div>
+
+      <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:20px">
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Contacts</h2>
+            <button style="border:0;background:transparent;padding:0;font:inherit;font-size:13px;color:#77766f;cursor:pointer" style-hover="color:#1c1c1a">+ Add</button>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:36px;height:36px;flex:none;border-radius:50%;background:#f6ebe2;color:#3a3a36;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">AS</div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:500">Andreea Stan</div>
+              <div style="font-size:12px;color:#77766f">Transport manager</div>
+            </div>
+          </div>
+          <a href="mailto:andreea.stan@danuberetail.example" style="font-size:13px;color:#5d5c56;padding:8px 10px;background:#f7f7f5;border-radius:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">andreea.stan@danuberetail.example</a>
+        </section>
+
+        <section style="background:#fff;border:1px solid #e7e6e1;border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+            <h2 style="margin:0;font-size:15px;font-weight:600">Tasks &amp; notes</h2>
+            <div style="font-size:13px;color:#77766f">{{ count }}</div>
+          </div>
+          <div style="border:1px solid #e3e2dd;border-radius:10px;display:flex;flex-direction:column">
+            <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="{{ placeholder }}" rows="2" style="border:0;outline:0;resize:none;font:inherit;font-size:13px;padding:12px;background:transparent;color:#1c1c1a;border-radius:10px"></textarea>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border-top:1px solid #f3f2ee">
+              <div style="display:flex;gap:2px;padding:3px;background:#f2f1ed;border-radius:7px">
+                <sc-for list="{{ kinds }}" as="k" hint-placeholder-count="2">
+                  <button onClick="{{ k.select }}" style="height:24px;padding:0 10px;border:0;border-radius:5px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;background:{{ k.bg }};color:{{ k.color }};box-shadow:{{ k.shadow }}">{{ k.label }}</button>
+                </sc-for>
+              </div>
+              <button onClick="{{ save }}" style="height:28px;padding:0 12px;border:0;border-radius:6px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;background:{{ saveBg }};color:#fff">Save</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ items }}" as="it" hint-placeholder-count="1">
+              <div style="display:flex;gap:12px;padding:12px 0;border-top:1px solid #efeee9">
+                <span style="flex:none;height:20px;margin-top:1px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:{{ it.tagBg }};color:{{ it.tagColor }}">{{ it.tag }}</span>
+                <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                  <div style="font-size:14px;font-weight:500;text-wrap:pretty">{{ it.title }}</div>
+                  <div style="font-size:12px;color:#77766f">{{ it.sub }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { kind: 'Note', draft: '', items: [{ tag: 'Planned', title: 'Send updated rate card', sub: 'Anna Kowalska' }] };
+  seg(on) { return { bg: on ? '#fff' : 'transparent', color: on ? '#1c1c1a' : '#77766f', shadow: on ? '0 1px 2px rgba(0,0,0,0.08)' : 'none' }; }
+  renderVals() {
+    const s = this.state;
+    const dots = { Invoiced: 'oklch(0.6 0.14 295)', Assigned: 'oklch(0.6 0.14 255)' };
+    const orders = [
+      ['NL-24026', 'Bucharest, RO', 'Milan, IT', 'Invoiced', '€6,880'],
+      ['NL-24022', 'Bucharest, RO', 'Milan, IT', 'Assigned', '€2,450']
+    ].map(([ref, from, to, status, price]) => ({ ref, from, to, status, price, dot: dots[status] }));
+    const tags = { Note: ['#f2f1ed', '#5d5c56'], Task: ['oklch(0.95 0.03 255)', 'oklch(0.45 0.13 255)'], Planned: ['oklch(0.95 0.03 255)', 'oklch(0.45 0.13 255)'] };
+    const items = s.items.map(it => ({ ...it, tagBg: tags[it.tag][0], tagColor: tags[it.tag][1] }));
+    const canSave = s.draft.trim().length > 0;
+    return {
+      orders, items, draft: s.draft,
+      count: `${s.items.length} item${s.items.length === 1 ? '' : 's'}`,
+      placeholder: s.kind === 'Note' ? 'Add a note…' : 'Describe the task…',
+      kinds: ['Note', 'Task'].map(label => ({ label, ...this.seg(s.kind === label), select: () => this.setState({ kind: label }) })),
+      onDraft: e => this.setState({ draft: e.target.value }),
+      saveBg: canSave ? '#1c1c1a' : '#c9c8c2',
+      save: () => canSave && this.setState(st => ({ draft: '', items: [{ tag: st.kind, title: st.draft.trim(), sub: 'Anna Kowalska · just now' }, ...st.items] }))
+    };
+  }
+}
+</script>
+</body>
+</html>
