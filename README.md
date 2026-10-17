@@ -89,11 +89,11 @@ Driver seats cannot call the office API. Read-only API keys cannot call anything
 
 ## Production
 
-Production is **not** Docker. **PM2** runs the frontend, API, and MCP. Host Nginx terminates TLS for `https://cargos.pro`.
+Production is **not** Docker. **PM2** runs the API and MCP. Host Nginx terminates TLS for `https://cargos.pro` and serves the built frontend from `frontend/dist`.
 
-| URL | PM2 app | Port |
+| URL | Served by | Port |
 | --- | --- | --- |
-| `https://cargos.pro` | `cargos-web` | `127.0.0.1:4173` |
+| `https://cargos.pro` | Nginx static files (`frontend/dist`) | — |
 | `https://cargos.pro/api/` | `cargos-api` | `127.0.0.1:3000` |
 | `https://cargos.pro/mcp` | `cargos-mcp` | `127.0.0.1:3100` |
 

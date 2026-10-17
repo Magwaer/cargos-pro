@@ -76,11 +76,11 @@ Docker Compose on this machine can still run the API and a local MCP (`http://lo
 
 ## Production (https://cargos.pro)
 
-The app and MCP run under **PM2**. Nginx terminates TLS and routes:
+The API and MCP run under **PM2**. Nginx terminates TLS, serves the built frontend from `frontend/dist`, and proxies the API and MCP:
 
-| URL | PM2 process | Port |
+| URL | Served by | Port |
 | --- | --- | --- |
-| `https://cargos.pro` | `cargos-web` (Vite preview of the build) | `127.0.0.1:4173` |
+| `https://cargos.pro` | Nginx static files (`frontend/dist`) | — |
 | `https://cargos.pro/api/` | `cargos-api` | `127.0.0.1:3000` |
 | `https://cargos.pro/mcp` | `cargos-mcp` | `127.0.0.1:3100` |
 
@@ -143,12 +143,11 @@ pm2 save
 pm2 startup
 ```
 
-`pm2 startup` prints a systemd command — run it so the three apps come back after reboot.
+`pm2 startup` prints a systemd command — run it so the API and MCP come back after reboot.
 
 ```bash
 pm2 status
 curl -s http://127.0.0.1:3000/api/health
-curl -s http://127.0.0.1:4173/
 curl -s http://127.0.0.1:3100/health
 ```
 
@@ -188,7 +187,7 @@ cd /opt/cargos.pro && git pull
 npm --prefix backend install --omit=dev
 npm --prefix frontend install && npm --prefix frontend run build
 npm --prefix mcp install --omit=dev
-pm2 restart cargos-api cargos-web cargos-mcp
+pm2 restart cargos-api cargos-mcp
 ```
 
 ## Environment
