@@ -2,6 +2,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from './log.js'
 
 const ACCESS_TTL_MS = 60 * 60 * 1000
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000
@@ -445,9 +446,25 @@ export class OAuthServer {
     return this.locked(async () => {
       const store = await this.read()
       const row = store.accessTokens[token]
-      if (!row || row.expiresAt <= Date.now()) return null
+      if (!row) {
+        log('OAuth access token unknown', { tokens: Object.keys(store.accessTokens).length, store: this.storePath })
+        return null
+      }
+      if (row.expiresAt <= Date.now()) {
+        log('OAuth access token expired', { email: row.session?.email, expiredAt: new Date(row.expiresAt).toISOString() })
+        return null
+      }
       return sessionCopy(row.session)
     })
+  }
+}
+
+function redactError(location) {
+  try {
+    const url = new URL(location)
+    return `bounce ${url.searchParams.get('error')}: ${url.searchParams.get('error_description')}`
+  } catch {
+    return 'bounce'
   }
 }
 
@@ -504,6 +521,14 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
   app.get('/oauth/authorize', async (req, res) => {
     try {
       const result = await server.startAuthorize(req.query, originFor(req))
+      log('OAuth authorize start', {
+        client: req.query.client_id,
+        redirect: req.query.redirect_uri,
+        resource: req.query.resource,
+        scope: req.query.scope,
+        prompt: req.query.prompt,
+        result: result.type === 'form' ? 'login form' : result.type === 'redirect' ? redactError(result.location) : result.title,
+      })
       sendAuthorize(res, result, '', originFor(req))
     } catch (err) {
       console.error(`OAuth authorize failed: ${err.message}`)
@@ -520,6 +545,7 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
         ip: req.ip || 'unknown',
       })
       if (result.type === 'redirect') console.error(`OAuth sign-in succeeded for ${result.email}`)
+      else log('OAuth sign-in not completed', { email: req.body?.email, reason: result.error || result.title })
       sendAuthorize(res, result, req.body?.email, originFor(req))
     } catch (err) {
       console.error(`OAuth sign-in failed: ${err.message}`)
@@ -530,7 +556,16 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
   app.post('/oauth/token', async (req, res) => {
     try {
       const body = req.body || {}
-      const result = await server.token({ body, clientId: clientIdFrom(req, body) })
+      const clientId = clientIdFrom(req, body)
+      const result = await server.token({ body, clientId })
+      log(`OAuth token ${body.grant_type || '?'} → ${result.status}`, {
+        client: clientId,
+        redirect: body.redirect_uri,
+        resource: body.resource,
+        basicAuth: String(req.headers.authorization || '').startsWith('Basic ') || undefined,
+        error: result.body.error ? `${result.body.error}: ${result.body.error_description}` : undefined,
+        expiresIn: result.body.expires_in,
+      })
       res.set('Cache-Control', 'no-store')
       res.status(result.status).json(result.body)
     } catch (err) {

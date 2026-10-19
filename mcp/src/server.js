@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { authPath, clearAuth, currentSession, loadAuth, persistLogin } from './auth.js'
 import { runBatch } from './batch.js'
+import { log } from './log.js'
 import { api, apiBase, run } from './client.js'
 import { RESOURCE_NAMES, RESOURCES, pickQuery } from './catalog.js'
 
@@ -9,7 +10,18 @@ const resourceEnum = z.enum(RESOURCE_NAMES)
 const dataObject = z.record(z.string(), z.any())
 
 function tool(server, name, description, schema, handler) {
-  server.tool(name, description, schema, (args) => run(() => handler(args)))
+  server.tool(name, description, schema, async (args) => {
+    const started = Date.now()
+    const result = await run(() => handler(args))
+    const session = currentSession()
+    log(`tool ${name} ${result.isError ? 'failed' : 'ok'}`, {
+      ms: Date.now() - started,
+      user: session?.email,
+      resource: args?.resource,
+      error: result.isError ? result.content?.[0]?.text?.slice(0, 300) : undefined,
+    })
+    return result
+  })
 }
 
 export function createServer() {

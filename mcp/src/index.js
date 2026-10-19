@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { createServer } from './server.js'
 import { persistLogin, loadAuth, loginAndMint, requestContext } from './auth.js'
 import { apiBase } from './client.js'
+import { log, requestLogger } from './log.js'
 import { decideAccess, defaultOAuthPath, mountOAuth, safeEqual, wwwAuthenticate } from './oauth.js'
 
 const transport = (process.env.MCP_TRANSPORT || 'stdio').toLowerCase()
@@ -49,6 +50,7 @@ async function startHttp() {
   const secret = process.env.MCP_SHARED_SECRET || ''
   const app = express()
   app.set('trust proxy', 1)
+  app.use(requestLogger())
   app.use(express.json({ limit: '4mb' }))
 
   const bind = process.env.MCP_BIND || '127.0.0.1'
@@ -67,8 +69,9 @@ async function startHttp() {
     const sharedMatch = Boolean(secret && bearer && safeEqual(bearer, secret))
     const session = !sharedMatch && bearer ? await oauth.resolveAccessToken(bearer) : null
     const decision = decideAccess({ bearer, sharedSecret: secret, session })
+    req.mcpAuthMode = decision.ok ? decision.mode : bearer ? 'rejected-bearer' : 'no-bearer'
+    req.mcpUser = decision.session?.email || undefined
     if (!decision.ok) {
-      console.error(`MCP 401 ${bearer ? 'rejected bearer' : 'no bearer'}`)
       res.set('WWW-Authenticate', wwwAuthenticate(oauth.originFor(req), { tokenPresent: Boolean(bearer) }))
       res.status(401).json({ error: 'Sign in required.' })
       return
@@ -81,21 +84,30 @@ async function startHttp() {
     }
     const server = createServer()
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+    transport.onerror = (err) => log(`! ${req.logId} MCP transport error`, { error: err?.message || String(err) })
+    server.server.onerror = (err) => log(`! ${req.logId} MCP server error`, { error: err?.message || String(err) })
     res.on('close', () => {
       transport.close?.()
       server.close?.()
     })
-    await server.connect(transport)
-    const handle = () => transport.handleRequest(req, res, req.body)
-    if (decision.session) await requestContext.run(decision.session, handle)
-    else await handle()
+    try {
+      await server.connect(transport)
+      const handle = () => transport.handleRequest(req, res, req.body)
+      if (decision.session) await requestContext.run(decision.session, handle)
+      else await handle()
+    } catch (err) {
+      log(`! ${req.logId} MCP handler threw`, { error: err?.stack || err?.message || String(err) })
+      if (!res.headersSent) res.status(500).json({ jsonrpc: '2.0', error: { code: -32603, message: 'Internal error.' }, id: null })
+    }
   })
 
-  app.use((err, _req, res, next) => {
+  app.use((err, req, res, next) => {
     if (err?.type !== 'entity.parse.failed') {
+      log(`! ${req.logId} unhandled error`, { error: err?.stack || err?.message || String(err) })
       next(err)
       return
     }
+    log(`! ${req.logId} malformed body`, { error: err.message })
     res.status(400).json({ error: 'invalid_request', error_description: 'Malformed body.' })
   })
 
