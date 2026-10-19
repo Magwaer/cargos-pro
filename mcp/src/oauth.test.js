@@ -99,7 +99,10 @@ test('authorization code flow, refresh rotation, and rejected registration', asy
       resource: `${ORIGIN}/mcp`,
       scope: 'mcp offline_access',
     })
-    const page = await (await fetch(`${base}/oauth/authorize?${query}`)).text()
+    const pageRes = await fetch(`${base}/oauth/authorize?${query}`)
+    const page = await pageRes.text()
+    assert.match(pageRes.headers.get('content-security-policy'), /form-action 'self' https:\/\/cargos\.pro/)
+    assert.doesNotMatch(page, /action=/)
     const nonce = page.match(/name="nonce" value="([^"]+)"/)[1]
     assert.match(page, /claude\.ai/)
 

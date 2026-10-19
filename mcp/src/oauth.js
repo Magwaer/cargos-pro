@@ -504,10 +504,10 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
   app.get('/oauth/authorize', async (req, res) => {
     try {
       const result = await server.startAuthorize(req.query, originFor(req))
-      sendAuthorize(res, result)
+      sendAuthorize(res, result, '', originFor(req))
     } catch (err) {
       console.error(`OAuth authorize failed: ${err.message}`)
-      sendPage(res, 500, 'Sign-in unavailable', 'Could not start sign-in. Try again.')
+      sendPage(res, 500, 'Sign-in unavailable', 'Could not start sign-in. Try again.', originFor(req))
     }
   })
 
@@ -520,10 +520,10 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
         ip: req.ip || 'unknown',
       })
       if (result.type === 'redirect') console.error(`OAuth sign-in succeeded for ${result.email}`)
-      sendAuthorize(res, result, req.body?.email)
+      sendAuthorize(res, result, req.body?.email, originFor(req))
     } catch (err) {
       console.error(`OAuth sign-in failed: ${err.message}`)
-      sendPage(res, 500, 'Sign-in unavailable', 'Could not sign in. Try again.')
+      sendPage(res, 500, 'Sign-in unavailable', 'Could not sign in. Try again.', originFor(req))
     }
   })
 
@@ -545,22 +545,23 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
   }
 }
 
-function sendAuthorize(res, result, email) {
+function sendAuthorize(res, result, email, origin) {
   if (result.type === 'redirect') {
     res.redirect(302, result.location)
     return
   }
   if (result.type === 'form') {
-    sendPage(res, 200, 'Sign in to Cargos', loginBody(result, email || result.email || ''))
+    sendPage(res, 200, 'Sign in to Cargos', loginBody(result, email || result.email || ''), origin)
     return
   }
-  sendPage(res, result.status || 400, result.title, result.message)
+  sendPage(res, result.status || 400, result.title, result.message, origin)
 }
 
-function sendPage(res, status, title, body) {
+function sendPage(res, status, title, body, origin) {
+  const formAction = origin ? ` 'self' ${origin}` : " 'self'"
   res.set('Cache-Control', 'no-store')
   res.set('Referrer-Policy', 'no-referrer')
-  res.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'")
+  res.set('Content-Security-Policy', `base-uri 'none'; script-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; form-action${formAction}`)
   res.set('X-Robots-Tag', 'noindex')
   res.status(status).type('html').send(`<!doctype html>
 <html lang="en">
@@ -591,7 +592,7 @@ function sendPage(res, status, title, body) {
 function loginBody(result, email) {
   return `<p>${esc(result.clientName)} will return to <strong>${esc(result.redirectHost)}</strong> after you sign in with your Cargos account.</p>
     ${result.error ? `<p class="error">${esc(result.error)}</p>` : ''}
-    <form method="post" action="/oauth/authorize">
+    <form method="post">
       <input type="hidden" name="nonce" value="${esc(result.nonce)}">
       <label for="email">Email</label>
       <input id="email" name="email" type="email" autocomplete="username" required value="${esc(email)}">
