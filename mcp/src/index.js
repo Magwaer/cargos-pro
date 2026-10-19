@@ -1,11 +1,16 @@
 import 'dotenv/config'
+import { webcrypto } from 'node:crypto'
 import { createServer } from './server.js'
 import { persistLogin, loadAuth, loginAndMint, requestContext } from './auth.js'
 import { apiBase } from './client.js'
 import { log, requestLogger } from './log.js'
 import { decideAccess, defaultOAuthPath, mountOAuth, safeEqual, wwwAuthenticate } from './oauth.js'
 
+// The MCP SDK calls global crypto.randomUUID(); Node 18 and older do not define global crypto.
+if (!globalThis.crypto) globalThis.crypto = webcrypto
+
 const transport = (process.env.MCP_TRANSPORT || 'stdio').toLowerCase()
+console.error(`Cargos MCP on Node ${process.version}`)
 
 await bootstrapAuth()
 
