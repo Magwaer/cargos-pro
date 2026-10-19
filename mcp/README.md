@@ -121,6 +121,7 @@ PUBLIC_URL=https://cargos.pro
 NODE_ENV=production
 CARGOS_API_URL=http://127.0.0.1:3000
 CARGOS_API_KEY=ck_live_…
+PUBLIC_URL=https://cargos.pro
 MCP_TRANSPORT=http
 MCP_PORT=3100
 MCP_BIND=127.0.0.1
@@ -128,7 +129,7 @@ MCP_AUTH_PATH=/var/lib/cargos/mcp-auth.json
 MCP_SHARED_SECRET=long-random-string
 ```
 
-`CARGOS_API_URL` is loopback so MCP talks to the API on the same machine. `MCP_SHARED_SECRET` is what Cursor sends; it is not the Cargos API key.
+`CARGOS_API_URL` is loopback so MCP talks to the API on the same machine. `MCP_SHARED_SECRET` is what Cursor sends; it is not the Cargos API key. `PUBLIC_URL` is the OAuth issuer Claude discovers. The connector URL is `https://cargos.pro/mcp`. PM2 also sets `PUBLIC_URL` in `ecosystem.config.cjs`.
 
 ```bash
 chmod 600 backend/.env mcp/.env
@@ -180,6 +181,23 @@ Point DNS for `cargos.pro` at this server before Certbot.
 
 Use the same string as `MCP_SHARED_SECRET`. The Cargos write key never leaves the server.
 
+### 7. Connect Claude
+
+Claude signs in with OAuth. Leave the OAuth Client ID blank. Claude registers itself.
+
+1. Set `PUBLIC_URL=https://cargos.pro` for the MCP process (PM2 sets this in `ecosystem.config.cjs`).
+2. Copy the Nginx site and reload it so `/.well-known/` and `/oauth/` reach the MCP process.
+3. In Claude, add a custom connector with the URL **`https://cargos.pro/mcp`** (no trailing slash).
+4. Sign in with a Cargos email and password when Claude opens the Cargos page.
+
+That sign-in mints a write API key named `Claude` for that user. Later tool calls run as that user. Cursor keeps using `MCP_SHARED_SECRET` and is unchanged.
+
+```bash
+sudo cp deploy/nginx/cargos.pro.conf /etc/nginx/sites-available/cargos.pro
+sudo nginx -t && sudo systemctl reload nginx
+pm2 restart cargos-mcp
+```
+
 ### After a code update
 
 ```bash
@@ -198,11 +216,13 @@ pm2 restart cargos-api cargos-mcp
 | `CARGOS_API_KEY` | Long-lived write key (`ck_live_…`) |
 | `CARGOS_TOKEN` | Alternate bearer token (JWT expires in 7 days) |
 | `CARGOS_EMAIL` / `CARGOS_PASSWORD` | Optional one-time login at start |
+| `PUBLIC_URL` | OAuth issuer, `https://cargos.pro` |
 | `MCP_AUTH_PATH` | File for the minted key |
+| `MCP_OAUTH_PATH` | OAuth clients and tokens. Defaults beside `MCP_AUTH_PATH` |
 | `MCP_TRANSPORT` | `stdio` or `http` |
 | `MCP_PORT` | HTTP port (default `3100`) |
 | `MCP_BIND` | Listen address (default `127.0.0.1`) |
-| `MCP_SHARED_SECRET` | Bearer required on `/mcp` |
+| `MCP_SHARED_SECRET` | Bearer for Cursor. Claude uses OAuth instead |
 
 ## Inspect (local)
 

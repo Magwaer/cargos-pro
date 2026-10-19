@@ -1,10 +1,17 @@
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const AUTH_PATH = process.env.MCP_AUTH_PATH || fileURLToPath(new URL('../data/auth.json', import.meta.url))
 
+export const requestContext = new AsyncLocalStorage()
+
 let cache = null
+
+export function currentSession() {
+  return requestContext.getStore() || null
+}
 
 function envToken() {
   return process.env.CARGOS_API_KEY || process.env.CARGOS_TOKEN || ''
@@ -39,6 +46,8 @@ export async function loadAuth() {
 }
 
 export async function getToken() {
+  const session = currentSession()
+  if (session?.token) return session.token
   const auth = await loadAuth()
   return auth?.token || ''
 }
@@ -59,20 +68,30 @@ export async function clearAuth() {
   }
 }
 
-export async function persistLogin(apiBase, email, password) {
+export async function loginAndMint(apiBase, email, password, { keyName = 'MCP server' } = {}) {
   const loginRes = await fetch(new URL('/api/auth/login', apiBase), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
+    signal: AbortSignal.timeout(8000),
   })
   const login = await readJson(loginRes)
-  if (!loginRes.ok) throw new Error(login.error || 'Sign in failed.')
+  if (!loginRes.ok) {
+    const error = new Error(login.error || 'Sign in failed.')
+    error.status = loginRes.status
+    throw error
+  }
   const jwt = login.token
   const meRes = await fetch(new URL('/api/auth/me', apiBase), {
     headers: { Authorization: `Bearer ${jwt}` },
+    signal: AbortSignal.timeout(8000),
   })
   const me = await readJson(meRes)
-  if (!meRes.ok) throw new Error(me.error || 'Could not load the signed-in user.')
+  if (!meRes.ok) {
+    const error = new Error(me.error || 'Could not load the signed-in user.')
+    error.status = meRes.status
+    throw error
+  }
 
   let token = jwt
   let kind = 'jwt'
@@ -81,7 +100,8 @@ export async function persistLogin(apiBase, email, password) {
     const keyRes = await fetch(new URL('/api/api-keys', apiBase), {
       method: 'POST',
       headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'MCP server', scope: 'write' }),
+      body: JSON.stringify({ name: String(keyName || 'MCP server').slice(0, 80), scope: 'write' }),
+      signal: AbortSignal.timeout(8000),
     })
     const key = await readJson(keyRes)
     if (keyRes.ok && key.token) {
@@ -93,7 +113,7 @@ export async function persistLogin(apiBase, email, password) {
     // Keep the JWT if the workspace cannot mint an API key.
   }
 
-  const saved = await saveAuth({
+  return {
     token,
     kind,
     expires,
@@ -102,7 +122,12 @@ export async function persistLogin(apiBase, email, password) {
     role: me.role,
     tenantId: me.tenant_id,
     tenantName: me.tenant_name,
-  })
+  }
+}
+
+export async function persistLogin(apiBase, email, password) {
+  const session = await loginAndMint(apiBase, email, password)
+  const saved = await saveAuth(session)
   return {
     ok: true,
     kind: saved.kind,

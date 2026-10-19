@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import { createServer } from './server.js'
-import { persistLogin, loadAuth } from './auth.js'
+import { persistLogin, loadAuth, loginAndMint, requestContext } from './auth.js'
 import { apiBase } from './client.js'
+import { decideAccess, defaultOAuthPath, mountOAuth, safeEqual, wwwAuthenticate } from './oauth.js'
 
 const transport = (process.env.MCP_TRANSPORT || 'stdio').toLowerCase()
 
@@ -51,29 +52,50 @@ async function startHttp() {
   app.use(express.json({ limit: '4mb' }))
 
   const bind = process.env.MCP_BIND || '127.0.0.1'
+  app.use(express.urlencoded({ extended: false, limit: '64kb' }))
 
   app.get('/health', (_req, res) => res.json({ ok: true, api: apiBase() }))
 
+  const oauth = mountOAuth(app, {
+    storePath: defaultOAuthPath(),
+    login: (email, password) => loginAndMint(apiBase(), email, password, { keyName: 'Claude' }),
+  })
+
   app.all('/mcp', async (req, res) => {
-    if (secret) {
-      const header = req.headers.authorization || ''
-      const token = header.startsWith('Bearer ') ? header.slice(7).trim() : (req.headers['x-mcp-key'] || '')
-      if (token !== secret) {
-        res.status(401).json({ error: 'MCP shared secret required.' })
-        return
-      }
+    const header = req.headers.authorization || ''
+    const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : String(req.headers['x-mcp-key'] || '')
+    const sharedMatch = Boolean(secret && bearer && safeEqual(bearer, secret))
+    const session = !sharedMatch && bearer ? await oauth.resolveAccessToken(bearer) : null
+    const decision = decideAccess({ bearer, sharedSecret: secret, session })
+    if (!decision.ok) {
+      console.error(`MCP 401 ${bearer ? 'rejected bearer' : 'no bearer'}`)
+      res.set('WWW-Authenticate', wwwAuthenticate(oauth.originFor(req), { tokenPresent: Boolean(bearer) }))
+      res.status(401).json({ error: 'Sign in required.' })
+      return
     }
     const server = createServer()
-    const session = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
     res.on('close', () => {
-      session.close?.()
+      transport.close?.()
       server.close?.()
     })
-    await server.connect(session)
-    await session.handleRequest(req, res, req.body)
+    await server.connect(transport)
+    const handle = () => transport.handleRequest(req, res, req.body)
+    if (decision.session) await requestContext.run(decision.session, handle)
+    else await handle()
+  })
+
+  app.use((err, _req, res, next) => {
+    if (err?.type !== 'entity.parse.failed') {
+      next(err)
+      return
+    }
+    res.status(400).json({ error: 'invalid_request', error_description: 'Malformed body.' })
   })
 
   app.listen(port, bind, () => {
+    const issuer = (process.env.PUBLIC_URL || '').replace(/\/$/, '') || '(request host)'
     console.error(`Cargos MCP HTTP on ${bind}:${port}/mcp → ${apiBase()}`)
+    console.error(`Cargos MCP OAuth issuer ${issuer}`)
   })
 }

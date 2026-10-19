@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { authPath, clearAuth, loadAuth, persistLogin } from './auth.js'
+import { authPath, clearAuth, currentSession, loadAuth, persistLogin } from './auth.js'
 import { runBatch } from './batch.js'
 import { api, apiBase, run } from './client.js'
 import { RESOURCE_NAMES, RESOURCES, pickQuery } from './catalog.js'
@@ -17,7 +17,7 @@ export function createServer() {
     name: 'cargos',
     version: '1.0.0',
     instructions: [
-      'Cargos.pro TMS tools. Authorization lives on this MCP server (API key or saved login), not on the client.',
+      'Cargos.pro TMS tools. A Claude connection is already signed in as that user. A shared-secret connection uses the key stored on this server. Do not ask an OAuth user to call auth_login.',
       'Prefer list/get before writes. Use batch for multiple insert/update/delete calls.',
       'Money fields are integer cents (186000 = €1,860). Dates are ISO-8601.',
     ].join(' '),
@@ -37,9 +37,29 @@ function registerAuth(server) {
   tool(server, 'auth_login', 'Sign in to Cargos and store a long-lived API key on this MCP server. Call once; later tools reuse the saved key until revoked.', {
     email: z.string().email(),
     password: z.string().min(1),
-  }, (args) => persistLogin(apiBase(), args.email, args.password))
+  }, async (args) => {
+    const session = currentSession()
+    if (session?.source === 'oauth') {
+      return { ok: true, source: 'oauth', email: session.email, name: session.name, role: session.role, tenantName: session.tenantName }
+    }
+    return persistLogin(apiBase(), args.email, args.password)
+  })
 
   tool(server, 'auth_status', 'Show whether this MCP server has stored Cargos authorization.', {}, async () => {
+    const session = currentSession()
+    if (session) {
+      return {
+        authorized: true,
+        apiUrl: apiBase(),
+        kind: session.kind,
+        source: 'oauth',
+        expires: session.expires || null,
+        email: session.email,
+        name: session.name,
+        role: session.role,
+        tenantName: session.tenantName,
+      }
+    }
     const auth = await loadAuth()
     if (!auth) return { authorized: false, apiUrl: apiBase(), authFile: authPath() }
     return {
@@ -57,6 +77,9 @@ function registerAuth(server) {
   })
 
   tool(server, 'auth_logout', 'Remove the API key stored on this MCP server. Environment CARGOS_API_KEY is not cleared.', {}, async () => {
+    if (currentSession()?.source === 'oauth') {
+      return { ok: false, error: 'Disconnect this connector in Claude to end the OAuth sign-in.' }
+    }
     await clearAuth()
     return { ok: true, envKeyStillUsed: Boolean(process.env.CARGOS_API_KEY || process.env.CARGOS_TOKEN) }
   })

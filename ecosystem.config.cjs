@@ -21,6 +21,7 @@ module.exports = {
         MCP_PORT: 3100,
         MCP_BIND: '127.0.0.1',
         CARGOS_API_URL: 'http://127.0.0.1:3000',
+        PUBLIC_URL: process.env.PUBLIC_URL || 'https://cargos.pro',
       },
     },
   ],
