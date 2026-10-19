@@ -101,8 +101,8 @@ test('authorization code flow, refresh rotation, and rejected registration', asy
     })
     const pageRes = await fetch(`${base}/oauth/authorize?${query}`)
     const page = await pageRes.text()
-    assert.match(pageRes.headers.get('content-security-policy'), /form-action 'self' https:\/\/cargos\.pro/)
-    assert.doesNotMatch(page, /action=/)
+    assert.doesNotMatch(pageRes.headers.get('content-security-policy'), /form-action/)
+    assert.match(page, /action="https:\/\/cargos\.pro\/oauth\/authorize"/)
     const nonce = page.match(/name="nonce" value="([^"]+)"/)[1]
     assert.match(page, /claude\.ai/)
 

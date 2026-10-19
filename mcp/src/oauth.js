@@ -507,7 +507,7 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
       sendAuthorize(res, result, '', originFor(req))
     } catch (err) {
       console.error(`OAuth authorize failed: ${err.message}`)
-      sendPage(res, 500, 'Sign-in unavailable', 'Could not start sign-in. Try again.', originFor(req))
+      sendPage(res, 500, 'Sign-in unavailable', 'Could not start sign-in. Try again.')
     }
   })
 
@@ -523,7 +523,7 @@ export function mountOAuth(app, { login, storePath, origin } = {}) {
       sendAuthorize(res, result, req.body?.email, originFor(req))
     } catch (err) {
       console.error(`OAuth sign-in failed: ${err.message}`)
-      sendPage(res, 500, 'Sign-in unavailable', 'Could not sign in. Try again.', originFor(req))
+      sendPage(res, 500, 'Sign-in unavailable', 'Could not sign in. Try again.')
     }
   })
 
@@ -551,17 +551,18 @@ function sendAuthorize(res, result, email, origin) {
     return
   }
   if (result.type === 'form') {
-    sendPage(res, 200, 'Sign in to Cargos', loginBody(result, email || result.email || ''), origin)
+    sendPage(res, 200, 'Sign in to Cargos', loginBody(result, email || result.email || '', origin))
     return
   }
-  sendPage(res, result.status || 400, result.title, result.message, origin)
+  sendPage(res, result.status || 400, result.title, result.message)
 }
 
-function sendPage(res, status, title, body, origin) {
-  const formAction = origin ? ` 'self' ${origin}` : " 'self'"
+function sendPage(res, status, title, body) {
+  // No form-action directive. Chrome blocks the sign-in POST when one is set,
+  // including 'self' and the explicit site origin, once the URL has a query string.
   res.set('Cache-Control', 'no-store')
   res.set('Referrer-Policy', 'no-referrer')
-  res.set('Content-Security-Policy', `base-uri 'none'; script-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; form-action${formAction}`)
+  res.set('Content-Security-Policy', "base-uri 'none'; script-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'")
   res.set('X-Robots-Tag', 'noindex')
   res.status(status).type('html').send(`<!doctype html>
 <html lang="en">
@@ -589,10 +590,11 @@ function sendPage(res, status, title, body, origin) {
 </html>`)
 }
 
-function loginBody(result, email) {
+function loginBody(result, email, origin) {
+  const action = `${String(origin || '').replace(/\/$/, '')}/oauth/authorize`
   return `<p>${esc(result.clientName)} will return to <strong>${esc(result.redirectHost)}</strong> after you sign in with your Cargos account.</p>
     ${result.error ? `<p class="error">${esc(result.error)}</p>` : ''}
-    <form method="post">
+    <form method="post" action="${esc(action)}">
       <input type="hidden" name="nonce" value="${esc(result.nonce)}">
       <label for="email">Email</label>
       <input id="email" name="email" type="email" autocomplete="username" required value="${esc(email)}">
