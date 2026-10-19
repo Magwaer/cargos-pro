@@ -36,16 +36,15 @@ async function bootstrapAuth() {
 }
 
 async function startStdio() {
-  const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js')
-  const server = createServer()
-  const io = new StdioServerTransport()
-  await server.connect(io)
+  const { serveStdio } = await import('@modelcontextprotocol/server/stdio')
+  serveStdio(() => createServer())
   console.error('Cargos MCP listening on stdio')
 }
 
 async function startHttp() {
   const express = (await import('express')).default
-  const { StreamableHTTPServerTransport } = await import('@modelcontextprotocol/sdk/server/streamableHttp.js')
+  const { createMcpHandler } = await import('@modelcontextprotocol/server')
+  const { Readable } = await import('node:stream')
   const port = Number(process.env.MCP_PORT || 3100)
   const secret = process.env.MCP_SHARED_SECRET || ''
   const app = express()
@@ -63,6 +62,15 @@ async function startHttp() {
     login: (email, password) => loginAndMint(apiBase(), email, password, { keyName: 'Claude' }),
   })
 
+  const mcp = createMcpHandler(
+    ({ era, authInfo }) => {
+      const session = authInfo?.extra?.session || null
+      log(`MCP serving ${era} request`, { user: session?.email })
+      return createServer({ session })
+    },
+    { onerror: (err) => log('MCP handler error', { error: err?.message || String(err) }) },
+  )
+
   app.all('/mcp', async (req, res) => {
     const header = req.headers.authorization || ''
     const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : String(req.headers['x-mcp-key'] || '')
@@ -76,25 +84,38 @@ async function startHttp() {
       res.status(401).json({ error: 'Sign in required.' })
       return
     }
-    if (req.method !== 'POST') {
-      // Stateless transport keeps a GET stream open without sending headers, so clients time out.
-      res.set('Allow', 'POST')
-      res.status(405).json({ jsonrpc: '2.0', error: { code: -32000, message: 'Method not allowed.' }, id: null })
-      return
-    }
-    const server = createServer()
-    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
-    transport.onerror = (err) => log(`! ${req.logId} MCP transport error`, { error: err?.message || String(err) })
-    server.server.onerror = (err) => log(`! ${req.logId} MCP server error`, { error: err?.message || String(err) })
+    const abort = new AbortController()
     res.on('close', () => {
-      transport.close?.()
-      server.close?.()
+      if (!res.writableFinished) abort.abort()
     })
     try {
-      await server.connect(transport)
-      const handle = () => transport.handleRequest(req, res, req.body)
-      if (decision.session) await requestContext.run(decision.session, handle)
-      else await handle()
+      const headers = new Headers()
+      for (const [key, value] of Object.entries(req.headers)) {
+        if (value === undefined || key === 'content-length') continue
+        headers.set(key, Array.isArray(value) ? value.join(', ') : String(value))
+      }
+      const hasBody = req.method !== 'GET' && req.method !== 'HEAD' && req.body !== undefined
+      const request = new Request(`${oauth.originFor(req)}${req.originalUrl}`, {
+        method: req.method,
+        headers,
+        body: hasBody ? JSON.stringify(req.body) : undefined,
+        signal: abort.signal,
+      })
+      const authInfo = decision.session
+        ? { token: bearer, clientId: 'cargos-oauth', scopes: ['mcp'], extra: { session: decision.session } }
+        : undefined
+      const handle = () => mcp.fetch(request, { authInfo, parsedBody: hasBody ? req.body : undefined })
+      const response = decision.session ? await requestContext.run(decision.session, handle) : await handle()
+      res.status(response.status)
+      response.headers.forEach((value, key) => res.setHeader(key, value))
+      if (!response.body) {
+        res.end()
+        return
+      }
+      Readable.fromWeb(response.body).on('error', (err) => {
+        if (!abort.signal.aborted) log(`! ${req.logId} MCP stream error`, { error: err?.message || String(err) })
+        res.destroy(err)
+      }).pipe(res)
     } catch (err) {
       log(`! ${req.logId} MCP handler threw`, { error: err?.stack || err?.message || String(err) })
       if (!res.headersSent) res.status(500).json({ jsonrpc: '2.0', error: { code: -32603, message: 'Internal error.' }, id: null })

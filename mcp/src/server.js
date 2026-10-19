@@ -1,6 +1,6 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { McpServer } from '@modelcontextprotocol/server'
 import { z } from 'zod'
-import { authPath, clearAuth, currentSession, loadAuth, persistLogin } from './auth.js'
+import { authPath, clearAuth, currentSession, loadAuth, persistLogin, requestContext } from './auth.js'
 import { runBatch } from './batch.js'
 import { log } from './log.js'
 import { api, apiBase, run } from './client.js'
@@ -10,10 +10,11 @@ const resourceEnum = z.enum(RESOURCE_NAMES)
 const dataObject = z.record(z.string(), z.any())
 
 function tool(server, name, description, schema, handler) {
-  server.tool(name, description, schema, async (args) => {
+  server.registerTool(name, { description, inputSchema: z.object(schema) }, async (args) => {
     const started = Date.now()
-    const result = await run(() => handler(args))
-    const session = currentSession()
+    const session = server.cargosSession
+    const call = () => run(() => handler(args))
+    const result = session ? await requestContext.run(session, call) : await call()
     log(`tool ${name} ${result.isError ? 'failed' : 'ok'}`, {
       ms: Date.now() - started,
       user: session?.email,
@@ -24,16 +25,15 @@ function tool(server, name, description, schema, handler) {
   })
 }
 
-export function createServer() {
-  const server = new McpServer({
-    name: 'cargos',
-    version: '1.0.0',
+export function createServer({ session } = {}) {
+  const server = new McpServer({ name: 'cargos', version: '1.0.0' }, {
     instructions: [
       'Cargos.pro TMS tools. A Claude connection is already signed in as that user. A shared-secret connection uses the key stored on this server. Do not ask an OAuth user to call auth_login.',
       'Prefer list/get before writes. Use batch for multiple insert/update/delete calls.',
       'Money fields are integer cents (186000 = €1,860). Dates are ISO-8601.',
     ].join(' '),
   })
+  server.cargosSession = session || null
 
   registerAuth(server)
   registerOverview(server)
