@@ -73,6 +73,12 @@ async function startHttp() {
       res.status(401).json({ error: 'Sign in required.' })
       return
     }
+    if (req.method !== 'POST') {
+      // Stateless transport keeps a GET stream open without sending headers, so clients time out.
+      res.set('Allow', 'POST')
+      res.status(405).json({ jsonrpc: '2.0', error: { code: -32000, message: 'Method not allowed.' }, id: null })
+      return
+    }
     const server = createServer()
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
     res.on('close', () => {
